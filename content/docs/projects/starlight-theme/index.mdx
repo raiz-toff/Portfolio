@@ -1,0 +1,47 @@
+---
+title: "Fumadocs Theme for Starlight"
+description: "A Starlight plugin that replaces core components to match the FumaDocs aesthetic."
+featured: true
+tags:
+  - Astro
+  - Starlight
+  - UI
+  - Theme
+categories:
+  - Web Development
+  - Plugins
+tech_stack:
+  - Astro
+  - Starlight
+  - TypeScript
+  - CSS Variables
+---
+
+A Starlight plugin that swaps out core components to get the FumaDocs look — without leaving the Astro ecosystem.
+
+<div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+  <LinkButton href="https://github.com/raiz-toff/starlight-fumadocs" icon="github">
+    View Source
+  </LinkButton>
+  <LinkButton href="/projects/starlight-glide/" variant="secondary" icon="right-arrow">
+    See Glide Indicator
+  </LinkButton>
+</div>
+
+## Live Demo
+
+<div style="border: 1px solid var(--color-fd-border); border-radius: 8px; overflow: hidden; margin-top: 1rem; background: var(--color-fd-card);">
+  <iframe
+    src="https://starlight-fumadocs.vercel.app/"
+    style="width: 100%; height: 600px; border: none;"
+    title="Starlight Fumadocs Demo"
+  ></iframe>
+</div>
+
+## What it does
+
+Overrides 10+ Starlight components — Header, Sidebar, TOC, Pagination, Footer — and replaces them with FumaDocs-style equivalents. Everything is tied to a `--fuma-radius` token system, so the whole thing is easy to adjust.
+
+The TOC has a physics-based glide indicator that stretches and snaps between headings as you scroll. The sidebar uses vertical rails with active-state bars to show document depth.
+
+Drop it into `astro.config.mjs` as a plugin and it handles the rest.

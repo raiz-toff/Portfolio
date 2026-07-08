@@ -1,0 +1,14 @@
+{
+  "title": "Windows & PowerShell",
+  "icon": "SquareTerminal",
+  "pages": [
+    "active-directory",
+    "dhcp-server",
+    "group-policy",
+    "centralized-deployment",
+    "powershell-gui",
+    "powershell-basic",
+    "ip-checking",
+    "powershell-advanced"
+  ]
+}

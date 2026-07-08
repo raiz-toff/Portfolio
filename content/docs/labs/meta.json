@@ -1,0 +1,14 @@
+{
+  "title": "Labs",
+  "description": "Hands-on networking builds & automation",
+  "icon": "FlaskConical",
+  "root": true,
+  "pages": [
+    "index",
+    "multi-vendor",
+    "office-setup",
+    "vlan-labs",
+    "windows-powershell",
+    "..."
+  ]
+}

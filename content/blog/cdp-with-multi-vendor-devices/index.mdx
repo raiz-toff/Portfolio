@@ -1,0 +1,45 @@
+---
+title: CDPONNONCISCODEVICE
+date: 2025-12-14
+description: Can Non-Cisco Devices Read or Transmit CDP?
+cover: "/blog/covers/cdp-with-multi-vendor-devices.png"
+tags:
+  - CDP
+  - Security
+  - Curiosity
+draft: false
+---
+
+# Can Non-Cisco Devices Read or Transmit CDP?
+
+## Overview
+Cisco Discovery Protocol (CDP) is commonly used in Cisco networks to advertise information about directly connected devices, such as platform type, software version, and IP addressing. While CDP is often described as a _Cisco-only_ protocol, this raises an important question: **is CDP restricted by design, or simply by vendor implementation and operational practice?**
+
+If a non-Cisco device or a Linux system is technically capable of decoding Ethernet frames, can it read CDP advertisements or even transmit CDP frames that Cisco devices accept? If so, does this present a security concern given the amount of information CDP exposes at Layer 2? And if not, what exactly prevents non-Cisco devices from participating—protocol mechanics, Cisco-specific enforcement, or lack of native support?
+
+This post explores CDP from a protocol and security perspective to understand whether its safety relies on technical controls, vendor boundaries, or best-practice configuration such as disabling CDP on untrusted interfaces.
+
+### Scenario
+```mermaid
+flowchart TD
+    A["Cisco Switch A<br>(CDP Enabled)"]:::cisco
+    L2["Layer 2 Ethernet<br>(Same Broadcast Domain)"]:::l2
+    B["Cisco Switch B<br>(CDP Enabled)"]:::cisco
+    C["Non-Cisco Device / Linux"]:::noncisco
+
+    A -- "CDP Multicast Advertisements<br>(EtherType 0x2000)" --> L2
+    L2 --> B
+    L2 --> C
+
+    subgraph Results ["Capabilities"]
+        direction BT
+        B_Res["CDP Sent & Read<br>(Native Support)"]:::native --> B
+        C_Res["Can see frames if parser exists<br>(Not enabled by default)"]:::custom --> C
+    end
+
+    classDef cisco fill:#3b82f6,stroke:#1e40af,color:#fff,stroke-width:2px
+    classDef l2 fill:#64748b,stroke:#334155,color:#fff
+    classDef noncisco fill:#f59e0b,stroke:#92400e,color:#fff
+    classDef native fill:#10b981,stroke:#065f46,color:#fff
+    classDef custom fill:#8b5cf6,stroke:#5b21b6,color:#fff
+```

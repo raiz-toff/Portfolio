@@ -1,0 +1,151 @@
+---
+title: "Trunk Port"
+description: "Configuring 802.1Q trunks between Cisco switches to allow multi-VLAN communication."
+date: 2025-09-03
+draft: false
+featured: false
+image: "./images/trunk-image.svg"
+tags: ["CCNA", "Layer 2", "VLAN", "Trunking"]
+categories: ["Networking"]
+topology: "/projects/network-map/TrunkPortConfiguration.html"
+---
+In this lab, VLANs were configured on two Cisco 2960 switches, access ports were assigned to the appropriate VLANs, and a trunk link was established between the switches to allow inter-switch VLAN communication.
+
+---
+
+# **Network Setup Overview**
+
+| Device | VLAN                  | IP Address | Port             | Cable Type       |
+| ------ | --------------------- | ---------- | ---------------- | ---------------- |
+| PC0    | VLAN 10 (SALES)       | 10.10.10.1 | Fa0/1 (Switch 0) | Straight-through |
+| PC1    | VLAN 10 (SALES)       | 10.10.10.2 | Fa0/2 (Switch 0) | Straight-through |
+| PC2    | VLAN 20 (ENGINEERING) | 10.10.10.3 | Fa0/3 (Switch 0) | Straight-through |
+| PC3    | VLAN 20 (ENGINEERING) | 10.10.10.4 | Fa0/4 (Switch 0) | Straight-through |
+| PC4    | VLAN 10 (SALES)       | 10.10.10.5 | Fa0/1 (Switch 1) | Straight-through |
+| PC5    | VLAN 10 (SALES)       | 10.10.10.6 | Fa0/2 (Switch 1) | Straight-through |
+| PC6    | VLAN 20 (ENGINEERING) | 10.10.10.7 | Fa0/3 (Switch 1) | Straight-through |
+| PC7    | VLAN 20 (ENGINEERING) | 10.10.10.8 | Fa0/4 (Switch 1) | Straight-through |
+
+**Core device:** Cisco 2960 Switch  
+**Note:** Switch-to-switch connection uses a crossover cable.
+
+---
+
+# **Configuration Steps**
+
+## 1. Create VLANs on Both Switches
+
+```bash
+Switch(config)# vlan 10
+Switch(config-vlan)# name SALES
+
+Switch(config)# vlan 20
+Switch(config-vlan)# name ENGINEERING
+```
+
+## 2. Assign Access Ports to VLANs
+
+```bash
+Switch(config)# interface fa0/1
+Switch(config-if)# switchport mode access
+Switch(config-if)# switchport access vlan 10
+
+Switch(config)# interface fa0/2
+Switch(config-if)# switchport mode access
+Switch(config-if)# switchport access vlan 10
+
+Switch(config)# interface range fa0/3 - 4
+Switch(config-if-range)# switchport mode access
+Switch(config-if-range)# switchport access vlan 20
+```
+
+## 3. Disable Unused Ports
+
+```bash
+Switch(config)# interface range fa0/5 - 24
+Switch(config-if-range)# description Inactive ports
+Switch(config-if-range)# shutdown
+
+Switch(config)# interface range g0/1 - 2
+Switch(config-if-range)# shutdown
+```
+
+---
+
+# **Verification**
+
+## 1. Display VLAN Assignment
+
+```bash
+Switch# show vlan brief
+```
+
+**Sample Output:**
+
+```
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/5-Fa0/24, Gig0/1, Gig0/2
+10   SALES                            active    Fa0/1, Fa0/2
+20   ENGINEERING                      active    Fa0/3, Fa0/4
+1002 fddi-default                     active
+1003 token-ring-default               active
+1004 fddinet-default                  active
+1005 trnet-default                    active
+```
+
+---
+
+# **Trunk Configuration Between Switches**
+
+The two switches are connected using GigabitEthernet0/1 interfaces. Trunking allows VLAN 10 and VLAN 20 to pass traffic between the switches.
+
+## Configuration on Both Switches
+
+```bash
+Switch(config)# interface gig0/1
+Switch(config-if)# switchport mode trunk
+Switch(config-if)# switchport trunk native vlan 199
+Switch(config-if)# switchport trunk allowed vlan 10,20
+```
+
+---
+
+# **Connectivity Testing**
+
+## Test 1: PC1 to PC4 (VLAN 10)
+
+**Expected:** Success  
+**Reason:** Both devices are in VLAN 10, on different switches, connected through a trunk.
+
+## Test 2: PC2 to PC7 (VLAN 20)
+
+**Expected:** Success  
+**Reason:** Same VLAN across switches, trunk allows communication.
+
+## Test 3: PC2 to PC4 (VLAN 20 to VLAN 10)
+
+**Expected:** Failure  
+**Reason:** Inter-VLAN communication requires a Layer 3 device.
+
+---
+
+# **Ping Test Summary**
+
+| From → To                      | Expected Result | Reason                                  |
+| ------------------------------ | --------------- | --------------------------------------- |
+| PC0 → PC1 (VLAN 10)            | Success         | Same VLAN                               |
+| PC2 → PC3 (VLAN 20)            | Success         | Same VLAN                               |
+| PC0 → PC2 (VLAN 10 → 20)       | Timeout         | Different VLANs, no routing             |
+| PC0 → PC4 (VLAN 10)            | Success         | Same VLAN on different switch via trunk |
+| PC0 → PC6 (VLAN 10 → 20)       | Timeout         | Different VLANs                         |
+| Switch0 → Switch1 (Trunk link) | Success         | Trunk operational                       |
+| VLANs across trunk             | Success         | Trunk passing allowed VLANs             |
+
+---
+
+# **Conclusion**
+
+The VLANs segment the network as expected, and the trunk carries VLAN 10 and 20 traffic between the two switches. Unused ports were shut down. The ping tests confirm both the VLAN separation and the working trunk.
+
+---

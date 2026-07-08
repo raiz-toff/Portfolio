@@ -1,0 +1,153 @@
+---
+title: Projects Hub
+description: Exploring system programming, web development, and network automation through hands-on projects.
+draft: false
+featured: false
+tags: []
+categories: []
+tech_stack: []
+pagefind: true
+sidebar:
+  label: Overview
+  order: -1
+  hidden: false
+---
+
+Welcome to my **Projects Hub**. Everything here is stuff I actually built and use, from low-level Linux utilities to full-stack web apps.
+
+<style>{`
+  .labs-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 1rem;
+    margin: 1.75rem 0 2.5rem;
+  }
+  .labs-hub-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.35rem;
+    border-radius: 14px;
+    border: 1px solid var(--color-fd-border);
+    background: var(--color-fd-card);
+    text-decoration: none;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .labs-hub-card:hover {
+    border-color: color-mix(in oklab, var(--color-fd-primary) 50%, var(--color-fd-border));
+    background: var(--color-fd-accent);
+  }
+  .labs-hub-category {
+    font-size: .67rem;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--color-fd-primary);
+    margin-bottom: .55rem;
+    display: block;
+  }
+  .labs-hub-card h3 {
+    margin: 0 0 .4rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    color: var(--color-fd-card-foreground);
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+  }
+  .labs-hub-card h3 span {
+    display: inline-block;
+    color: var(--color-fd-primary);
+    transition: transform .2s ease;
+  }
+  .labs-hub-card:hover h3 span { transform: translateX(4px); }
+  .labs-hub-card p {
+    margin: 0;
+    font-size: .875rem;
+    line-height: 1.55;
+    color: var(--color-fd-muted-foreground);
+  }
+  .labs-hub-tip {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    padding: .9rem 1.15rem;
+    margin-top: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--color-fd-border);
+    border-left: 3px solid var(--color-fd-primary);
+    background: var(--color-fd-card);
+  }
+  .labs-hub-tip-icon {
+    display: flex;
+    align-items: center;
+    color: var(--color-fd-primary);
+    flex-shrink: 0;
+  }
+  .labs-hub-tip-text {
+    margin: 0;
+    font-size: .86rem;
+    line-height: 1.5;
+    color: var(--color-fd-muted-foreground);
+  }
+  .labs-hub-tip-text a {
+    color: var(--color-fd-primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .labs-hub-tip-text a:hover { text-decoration: underline; }
+`}</style>
+
+<div className="labs-hub-grid not-content">
+  <a href="/docs/projects/virtualdisplay" className="labs-hub-card">
+    <div>
+      <span className="labs-hub-category">System Programming</span>
+      <h3>Virtual Display for Linux <span>&rarr;</span></h3>
+      <p>A system-level Linux utility focusing on kernel-level display drivers (EVDI) and low-latency data streaming.</p>
+    </div>
+  </a>
+
+  <a href="/docs/projects/comma" className="labs-hub-card">
+    <div>
+      <span className="labs-hub-category">Web Apps</span>
+      <h3>Comma <span>&rarr;</span></h3>
+      <p>A privacy-first earnings tracker for gig workers — offline-first, no backend, available as a PWA and a native Expo/React Native app.</p>
+    </div>
+  </a>
+
+  <a href="/docs/projects/starlight-glide" className="labs-hub-card">
+    <div>
+      <span className="labs-hub-category">Starlight Plugins</span>
+      <h3>Starlight Glide <span>&rarr;</span></h3>
+      <p>A premium, modular table of contents indicator for Starlight documentation with desktop and mobile support.</p>
+    </div>
+  </a>
+
+  <a href="/docs/projects/starlight-theme" className="labs-hub-card">
+    <div>
+      <span className="labs-hub-category">Starlight Plugins</span>
+      <h3>Starlight Fumadocs Theme <span>&rarr;</span></h3>
+      <p>A Starlight plugin that replaces core components to match the FumaDocs aesthetic.</p>
+    </div>
+  </a>
+</div>
+
+## Technical Focus Areas
+
+- **System Programming**: Kernel-level display drivers (EVDI) and low-latency data streaming.
+- **Web Development**: Flask backends with SQLite, plus the analytics dashboards built on top of them.
+- **Performance**: Using NVENC/VAAPI hardware encoders to keep video encoding off the CPU.
+- **Automation**: Developing tools that replace manual workflows and improve daily efficiency.
+
+<div className="labs-hub-tip not-content">
+  <span className="labs-hub-tip-icon">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+    </svg>
+  </span>
+  <p className="labs-hub-tip-text">
+    All projects are open-source and available on <a href="https://github.com/raiz-toff">GitHub</a>. Check individual pages for repository links and setup instructions.
+  </p>
+</div>

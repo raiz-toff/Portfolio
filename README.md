@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# rajkumarneupane.com
 
-## Getting Started
+Portfolio, documentation, and blog — one Next.js app, one domain.
 
-First, run the development server:
+Merged from two repos: the portfolio (this repo's origin, design adapted from
+[chanhdai.com](https://github.com/ncdai/chanhdai.com), MIT) and the Fumadocs
+documentation portal (formerly deployed at labs.rajkumarneupane.com).
+
+## Map
+
+| Route | What lives there |
+| --- | --- |
+| `/` | Portfolio — profile, experience, certifications, lab log, projects |
+| `/about` | Full story |
+| `/docs` | Docs entry — the documentation drawn as a network topology |
+| `/docs/labs`, `/docs/projects`, `/docs/ccna-labs` | Lab write-ups & project docs (Fumadocs) |
+| `/blog` | Blog (standalone route, violet accent) |
+| `/rss.xml`, `/sitemap.xml`, `/robots.txt` | Feeds & crawlers |
+| `/llms.txt`, `/llms-full.txt`, `*.md` | LLM-friendly markdown (content negotiation via `src/proxy.ts`) |
+
+## Stack
+
+- **Next.js** (App Router) + **Tailwind CSS v4**
+- **Fumadocs** for `/docs` and `/blog` (MDX authored in Obsidian under `content/`)
+- Theming via next-themes (fumadocs RootProvider); portfolio + docs share the
+  `.dark` class and `theme` localStorage key
+- Vercel Analytics
+
+## Development
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install --legacy-peer-deps
+npm run dev          # http://localhost:3000
+npm run build        # production build
+npm run types:check  # fumadocs-mdx + typegen + tsc
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Set `NEXT_PUBLIC_SITE_URL=https://rajkumarneupane.com` in production so
+canonicals, the sitemap, RSS, and OG images use the right origin (falls back
+to the Vercel production URL).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Connect
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **LinkedIn**: [in/rjneupane](https://www.linkedin.com/in/rjneupane)
+- **GitHub**: [raiz-toff](https://github.com/raiz-toff)
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*Crafted with Curiosity by Rajkumar Neupane.*

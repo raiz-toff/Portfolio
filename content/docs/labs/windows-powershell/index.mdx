@@ -1,0 +1,111 @@
+---
+title: Windows Server & PowerShell Labs
+description: A collection of hands-on labs covering Windows Server roles deployment, Active Directory services, Group Policies, and automation scripting with PowerShell.
+image: ./social.png
+sidebar:
+  label: Overview
+  order: -1
+
+---
+
+Windows Server and PowerShell labs from my semester at Canadore College. Covers setting up AD, DHCP, Group Policy, remote software deployment, and writing admin scripts from scratch.
+
+<CardGrid>
+  <LinkCard 
+    title="Active Directory"  
+    description="Set up AD DS and promote a Windows Server to a Domain Controller." 
+    href="/labs/windows-powershell/active-directory/" 
+  />
+  <LinkCard 
+    title="DHCP Server" 
+    description="Install the DHCP role, create address scopes, and test client leases." 
+    href="/labs/windows-powershell/dhcp-server/" 
+  />
+  <LinkCard 
+    title="Group Policy" 
+    description="Create GPOs, configure admin templates, and push workstation policies." 
+    href="/labs/windows-powershell/group-policy/" 
+  />
+  <LinkCard 
+    title="Centralized Deployment" 
+    description="Push software installs to domain-joined machines remotely using PowerShell and admin shares." 
+    href="/labs/windows-powershell/centralized-deployment/" 
+  />
+  <LinkCard 
+    title="PowerShell GUI" 
+    description="A full WinForms IT dashboard built in PowerShell — AD management, health checks, backups, and more." 
+    href="/labs/windows-powershell/powershell-gui/" 
+  />
+  <LinkCard 
+    title="AD Admin (Basic)" 
+    description="A basic script with a switch/case menu to create users, groups, and install server roles." 
+    href="/labs/windows-powershell/powershell-basic/" 
+  />
+  <LinkCard 
+    title="IPv4 Validator" 
+    description="A small PowerShell script that validates IPv4 input — format, characters, and range." 
+    href="/labs/windows-powershell/ip-checking/" 
+  />
+  <LinkCard 
+    title="AD Admin (Advanced)" 
+    description="Extended admin script covering 10 operations: create, delete, reset, disable, enable, and group management." 
+    href="/labs/windows-powershell/powershell-advanced/" 
+  />
+</CardGrid>
+
+---
+
+### What's covered
+- Active Directory, DHCP, Group Policy — Windows Server roles and how to configure them
+- Centralized software deployment over the network using PowerShell remoting
+- Writing AD admin scripts from basic menus to a full 10-operation suite
+- A full WinForms GUI dashboard built entirely in PowerShell
+- Input validation scripting (IPv4 address checker)
+
+---
+
+<div class="lab-note">
+  <div class="lab-note-icon">📋</div>
+  <div class="lab-note-body">
+    <strong>About these labs</strong>
+    <p>These labs were completed during my semester at Canadore College and originally submitted in Word and PDF format. I ran them through Pandoc and a Python script to convert everything to Markdown for publishing here.</p>
+    <p>The conversion was fast but not perfect — there may be the odd typo or formatting quirk that slipped through. I caught most of it, but some things get lost in translation.</p>
+  </div>
+</div>
+
+<style>{`
+  .lab-note {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin: 1.5rem 0;
+    padding: .95rem 1.2rem;
+    border-radius: 12px;
+    border: 1px solid var(--color-fd-border);
+    border-left: 3px solid var(--color-fd-primary);
+    background: var(--color-fd-card);
+  }
+  .lab-note-icon {
+    font-size: 18px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+  .lab-note-body {
+    font-size: .875rem;
+    color: var(--color-fd-muted-foreground);
+    line-height: 1.6;
+  }
+  .lab-note-body strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--color-fd-card-foreground);
+    font-size: .9rem;
+    letter-spacing: 0.01em;
+  }
+  .lab-note-body p {
+    margin: 0 0 6px;
+  }
+  .lab-note-body p:last-child {
+    margin-bottom: 0;
+  }
+`}</style>

@@ -1,0 +1,21 @@
+{
+  "title": "Mega Lab",
+  "pages": [
+    "overview",
+    "phase-1-network-fundamentals-basic-connectivity-and-osi",
+    "phase-2-ipv4ipv6-addressing-and-subnetting",
+    "phase-3-vlans-trunking-and-vtp-layer-2-segmentation",
+    "phase-4-inter-vlan-routing-router-on-a-stick",
+    "phase-5-spanning-tree-rstp-and-etherchannel",
+    "phase-6-static-routing-multi-router-network",
+    "phase-7-dynamic-routing-rip",
+    "phase-8-dynamic-routing-ospf",
+    "phase-9-access-control-lists-acls-and-nat",
+    "phase-10-dhcp-dns-snmp-and-other-ip-services",
+    "phase-11-wan-links-hdlc-and-ppp",
+    "phase-12-layer-2-security-port-security-dhcp-snooping-dai",
+    "phase-13-device-management-and-automation",
+    "phase-14",
+    "..."
+  ]
+}

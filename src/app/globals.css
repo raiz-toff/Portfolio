@@ -1,26 +1,483 @@
 @import "tailwindcss";
+@import "fumadocs-ui/css/black.css";
+@import "fumadocs-ui/css/preset.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  Design system adapted from chanhdai.com (MIT, © Chánh Đại).
+  Zinc-neutral palette, full-bleed hairlines ("screen lines"), diagonal-stripe
+  dividers, centered bordered rail. Green/amber port-LEDs kept from the old
+  design as the single bespoke accent.
+*/
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-line: var(--line);
+  --color-ring: var(--ring);
+  --color-link: var(--link);
+  --color-led-green: var(--led-green);
+  --color-led-amber: var(--led-amber);
+
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-heading: var(--font-geist-sans), system-ui, sans-serif;
+
+  --default-mono-font-feature-settings: "ss11" 1, "zero" 1, "tnum" 1;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: oklch(1 0 0); /* white */
+  --foreground: oklch(0.141 0.005 285.823); /* zinc-950 */
+  --muted: oklch(0.967 0.001 286.375); /* zinc-100 */
+  --muted-foreground: oklch(0.552 0.016 285.938); /* zinc-500 */
+  --border: oklch(0.92 0.004 286.32); /* zinc-200 */
+  --line: color-mix(in oklab, var(--border) 64%, var(--background));
+  --ring: oklch(0.705 0.015 286.067); /* zinc-400 */
+  --link: oklch(0.488 0.243 264.376); /* blue-700 */
+  --led-green: oklch(0.627 0.17 149.2); /* readable green on white */
+  --led-amber: oklch(0.666 0.157 66.3); /* readable amber on white */
+  --led-teal: oklch(0.6 0.11 195); /* readable teal on white */
+  --selection: oklch(0.141 0.005 285.823);
+  --selection-foreground: oklch(0.985 0 0);
+  --header-height: 3.5rem;
+  --expo-out: linear(
+    0 0%, 0.1684 2.66%, 0.3165 5.49%, 0.446 8.52%, 0.5581 11.78%,
+    0.6535 15.29%, 0.7341 19.11%, 0.8011 23.3%, 0.8557 27.93%,
+    0.8962 32.68%, 0.9283 38.01%, 0.9529 44.08%, 0.9711 51.14%,
+    0.9833 59.06%, 0.9915 68.74%, 1 100%
+  );
+
+  /* ── cover-lab hardware chrome: shared by the /cover candidates so panel
+     plates, ports, and strokes adapt to light/dark instead of staying
+     fixed-dark. Defined once — each alias tracks whichever theme's
+     --muted/--border/--background is currently in scope. ── */
+  --hw-plate: var(--muted);
+  --hw-face-1: color-mix(in oklab, var(--hw-plate) 82%, black);
+  --hw-face-2: color-mix(in oklab, var(--hw-plate) 91%, black);
+  --hw-face-3: var(--hw-plate);
+  --hw-well: color-mix(in oklab, var(--hw-plate) 65%, black);
+  --hw-stroke: var(--border);
+  --hw-stroke-soft: color-mix(in oklab, var(--border) 55%, var(--background));
+  --hw-stroke-strong: var(--ring);
+  --hw-label: var(--muted-foreground);
+  --hw-label-dim: color-mix(in oklab, var(--muted-foreground) 60%, var(--background));
+  --hw-cable: var(--ring);
+}
+
+.dark {
+  --background: oklch(0.141 0.005 285.823); /* zinc-950 */
+  --foreground: oklch(0.985 0 0); /* zinc-50 */
+  --muted: oklch(0.274 0.006 286.033); /* zinc-800 */
+  --muted-foreground: oklch(0.705 0.015 286.067); /* zinc-400 */
+  --border: oklch(0.274 0.006 286.033); /* zinc-800 */
+  --ring: oklch(0.552 0.016 285.938); /* zinc-500 */
+  --link: oklch(0.623 0.214 259.815); /* blue-500 */
+  --led-green: oklch(0.792 0.209 151.7); /* green-400 */
+  --led-amber: oklch(0.828 0.156 84.4); /* amber-400 */
+  --led-teal: oklch(0.75 0.14 195); /* readable teal on near-black */
+  --selection: oklch(0.985 0 0);
+  --selection-foreground: oklch(0.141 0.005 285.823);
+}
+
+/* ── full-bleed hairlines: the signature "screen lines" ── */
+@utility screen-line-top {
+  @apply relative;
+  &:before {
+    content: "";
+    @apply absolute top-0 left-[-100vw] -z-1 h-px w-[200vw] bg-line;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility screen-line-bottom {
+  @apply relative;
+  &:after {
+    content: "";
+    @apply absolute bottom-0 left-[-100vw] -z-1 h-px w-[200vw] bg-line;
+  }
+}
+
+@utility screen-line-top-none {
+  @apply before:content-none;
+}
+
+@utility screen-line-bottom-none {
+  @apply after:content-none;
+}
+
+/* ── diagonal-stripe filler, used between sections ── */
+@utility diagonal-stripes {
+  @apply [--pattern-foreground:var(--color-line)]/56;
+  @apply bg-[repeating-linear-gradient(315deg,var(--pattern-foreground)_0,var(--pattern-foreground)_1px,transparent_0,transparent_50%)] bg-size-[10px_10px];
+}
+
+@utility stripe-divider {
+  @apply relative h-8;
+  &:before {
+    content: "";
+    @apply absolute left-[-100vw] -z-1 h-full w-[200vw] diagonal-stripes;
+  }
+}
+
+/* ── links ── */
+@utility link {
+  @apply decoration-1 underline-offset-3 hover:underline;
+}
+
+@utility link-underline {
+  @apply underline decoration-current/30 decoration-1 underline-offset-3 transition-colors hover:decoration-current;
+}
+
+/* ── port LEDs, the one bespoke accent kept from v1 ── */
+.led {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+.led-green {
+  background: var(--led-green);
+  box-shadow: 0 0 6px color-mix(in oklab, var(--led-green) 70%, transparent);
+  animation: led-traffic 2.4s steps(1) infinite;
+}
+.led-amber {
+  background: var(--led-amber);
+  box-shadow: 0 0 6px color-mix(in oklab, var(--led-amber) 70%, transparent);
+  animation: led-blink 1.2s ease-in-out infinite;
+}
+
+@keyframes led-traffic {
+  0%, 8% { opacity: 1; }
+  10%, 13% { opacity: 0.35; }
+  15%, 42% { opacity: 1; }
+  44%, 46% { opacity: 0.35; }
+  48%, 71% { opacity: 1; }
+  73%, 75% { opacity: 0.35; }
+  77%, 100% { opacity: 1; }
+}
+@keyframes led-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ── dropdown / palette pop-in, one-shot on mount (command menu, share menu) ── */
+.menu-pop {
+  animation: menu-pop 0.15s cubic-bezier(0.2, 0, 0, 1);
+}
+@keyframes menu-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+.backdrop-fade {
+  animation: backdrop-fade 0.15s ease-out;
+}
+@keyframes backdrop-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── greeting icon, one-shot in + a small idle loop per time of day ── */
+.greeting-pop {
+  animation: menu-pop 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.greeting-icon-sun {
+  transform-origin: center;
+  animation: greeting-sun-spin 12s linear infinite;
+}
+.greeting-icon-sunset {
+  animation: greeting-sunset-bob 2.6s ease-in-out infinite;
+}
+.greeting-icon-moon {
+  animation: greeting-moon-drift 3.6s ease-in-out infinite;
+}
+@keyframes greeting-sun-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes greeting-sunset-bob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+}
+@keyframes greeting-moon-drift {
+  0%, 100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+/* ── flip sentences ── */
+.flip-item {
+  animation: flip-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes flip-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── story cover: chapter transitions (cover lab, candidate g) ──
+   "in" = camera pushes deeper (old view swells past the lens, new view grows
+   from behind); "out" = camera pulls back (mirrored). Falls back to plain
+   crossfades under prefers-reduced-motion. */
+.story-enter-in {
+  animation: story-enter-in 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.story-enter-out {
+  animation: story-enter-out 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.story-exit-in {
+  animation: story-exit-in 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.story-exit-out {
+  animation: story-exit-out 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes story-enter-in {
+  from { opacity: 0; transform: scale(0.9); }
+}
+@keyframes story-enter-out {
+  from { opacity: 0; transform: scale(1.1); }
+}
+@keyframes story-exit-in {
+  to { opacity: 0; transform: scale(1.1); }
+}
+@keyframes story-exit-out {
+  to { opacity: 0; transform: scale(0.9); }
+}
+@keyframes story-fade-in {
+  from { opacity: 0; }
+}
+@keyframes story-fade-out {
+  to { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-enter-in,
+  .story-enter-out {
+    animation-name: story-fade-in;
+  }
+  .story-exit-in,
+  .story-exit-out {
+    animation-name: story-fade-out;
+  }
+}
+
+/* ── topology packets ── */
+.packet {
+  fill: var(--led-green);
+}
+.packet-return {
+  fill: var(--led-amber);
+}
+.topo-link {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.topo-node .node-shape {
+  fill: var(--background);
+  stroke: var(--ring);
+  stroke-width: 1;
+}
+.topo-node text {
+  fill: var(--muted-foreground);
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before {
+    border-color: var(--border);
+  }
+
+  ::selection {
+    background: var(--selection);
+    color: var(--selection-foreground);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 5px;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  [id] {
+    scroll-margin-top: calc(var(--header-height) + 2rem);
+  }
+}
+
+/* ── theme-toggle polygon effect (ncdai/theme-toggle-effect-polygon) ── */
+@layer base {
+  ::view-transition-group(root) {
+    animation-duration: 0.7s;
+    animation-timing-function: var(--expo-out);
+  }
+  ::view-transition-new(root) {
+    animation-name: reveal-light;
+    animation-fill-mode: both;
+  }
+  ::view-transition-old(root),
+  .dark::view-transition-old(root) {
+    animation: none;
+    animation-fill-mode: both;
+    z-index: -1;
+  }
+  .dark::view-transition-new(root) {
+    animation-name: reveal-dark;
+    animation-fill-mode: both;
+  }
+}
+
+@keyframes reveal-dark {
+  from {
+    clip-path: polygon(50% -71%, -50% 71%, -50% 71%, 50% -71%);
+  }
+  to {
+    clip-path: polygon(50% -71%, -50% 71%, 50% 171%, 171% 50%);
+  }
+}
+@keyframes reveal-light {
+  from {
+    clip-path: polygon(171% 50%, 50% 171%, 50% 171%, 171% 50%);
+  }
+  to {
+    clip-path: polygon(171% 50%, 50% 171%, -50% 71%, 50% -71%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .led-green,
+  .led-amber,
+  .flip-item,
+  .menu-pop,
+  .backdrop-fade,
+  .greeting-pop,
+  .greeting-icon-sun,
+  .greeting-icon-sunset,
+  .greeting-icon-moon {
+    animation: none;
+  }
+  .packet,
+  .packet-return {
+    display: none;
+  }
+  ::view-transition-group(root),
+  ::view-transition-new(root),
+  ::view-transition-old(root) {
+    animation: none !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   Docs & blog zone (merged from the Fumadocs docs site). Everything below is
+   scoped so the portfolio pages are untouched: the fumadocs layouts render a
+   `[data-fd-zone]` marker (display: contents), and body:has() gates on it.
+   ════════════════════════════════════════════════════════════════════════ */
+
+html {
+  scrollbar-gutter: stable;
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+/* Aurora backdrop — soft, blurred accent orbs fading to the base background.
+   Re-tints per section via --color-fd-primary (Labs amber, Projects blue,
+   Blog violet). Docs/blog pages only. */
+body:has([data-fd-zone])::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 46% at 16% 6%,
+      color-mix(in oklab, var(--color-fd-primary) 32%, transparent), transparent 68%),
+    radial-gradient(36% 40% at 84% 0%,
+      color-mix(in oklab, var(--color-fd-primary) 22%, transparent), transparent 66%),
+    radial-gradient(58% 55% at 52% -10%,
+      color-mix(in oklab, var(--color-fd-primary) 16%, transparent), transparent 72%),
+    radial-gradient(38% 44% at 92% 55%,
+      color-mix(in oklab, var(--color-fd-primary) 9%, transparent), transparent 70%);
+  filter: blur(28px) saturate(1.15);
+  -webkit-mask-image: linear-gradient(#000 55%, transparent 92%);
+  mask-image: linear-gradient(#000 55%, transparent 92%);
+}
+
+/* Whisper of film grain over the aurora for texture (theme-agnostic). */
+body:has([data-fd-zone])::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Docs-map topology: per-segment accent resolves to the light or dark value
+   (mirrors how SECTION_THEME picks per theme inside /docs). */
+.seg-node {
+  --seg: var(--seg-light);
+}
+.dark .seg-node {
+  --seg: var(--seg-dark);
+}
+a.seg-node:hover {
+  border-color: var(--hover-border, var(--color-fd-border));
 }

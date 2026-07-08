@@ -1,0 +1,12 @@
+---
+title: ICMP Behavior Over Different Subnetworks
+cover: "/blog/covers/curiosity-lab.png"
+date: 2025-11-16
+tags: ["ICMP", "Networking", "Curiosity"]
+description: In this scenario, I noticed that even if two routers’ interfaces are connected to each other but have different subnet masks, the ICMP messages (ping) are still working fine.
+---
+
+In this scenario, I noticed that even if two routers’ interfaces are connected to each other but have different subnet masks, the ICMP messages (ping) are still working fine.
+Even if devices are in different subnets, ICMP can succeed if the device sends traffic to its default gateway, and the gateway resolves the MAC correctly via ARP.
+
+📄 **[View the full lab notes (PDF)](/blog/ICMPBehavior.pdf)**

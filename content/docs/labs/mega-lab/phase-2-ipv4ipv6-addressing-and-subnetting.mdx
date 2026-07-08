@@ -1,0 +1,50 @@
+---
+sidebar:
+  order: 2
+sticker: emoji//1f530
+title: Phase 2 IPv4,IPv6 Addressing and Subnetting
+slug: ""
+date: 2026-01-25
+draft: true
+featured: false
+weight: 2
+status: planning
+summary: ""
+description: ""
+cover: ""
+tags: []
+categories: []
+tech_stack: []
+github: ""
+demo: ""
+website: ""
+---
+**Concepts:** IP addressing schemes, subnetting (VLSM), and IPv6 basics. Understand unicast vs multicast, public vs private addressing. Practice dividing networks into subnets. Configure static IPv6 addresses and enable IPv6 routing.
+
+**Tasks:**
+
+- **Topology Extension:** Add a **Cisco 2911 router (R1)** and a second **2960 switch** with 2 PCs. Connect R1 to both switches (use different interfaces or ports).
+    
+- **IP Plan:** Create two LANs. For example, Network A: `192.168.10.0/24` for PCs on Switch1; Network B: `192.168.20.0/24` for PCs on Switch2. On R1, assign Gig0/0 = 192.168.10.1/24 (to Switch1) and Gig0/1 = 192.168.20.1/24 (to Switch2). Configure PCs: PC0 = 192.168.10.10/24 (gateway 192.168.10.1), PC1 = 192.168.10.11/24 (gateway 192.168.10.1), PC2 = 192.168.20.10/24 (gateway 192.168.20.1 on R1’s other interface), etc.
+    
+- **Subnetting Exercise:** Practice VLSM: e.g. break `192.168.10.0/24` into two `/25` networks or smaller subnets, and redeploy addresses. Confirm you understand new netmasks and host ranges.
+    
+- **IPv6 Configuration:** On R1, enable IPv6:
+    
+    ```
+    R1(config)#ipv6 unicast-routing
+    R1(config)#interface gigabitEthernet0/0
+    R1(config-if)#ipv6 address 2001:db8:10:0::1/64
+    R1(config-if)#exit
+    R1(config)#interface gigabitEthernet0/1
+    R1(config-if)#ipv6 address 2001:db8:20:0::1/64
+    ```
+    
+    On PCs, add IPv6 addresses (e.g. PC0 = 2001:db8:10:0::10/64).
+    
+- **Verify:** From PC0, test `ping 2001:db8:10:0::1` (router) and `ping 192.168.20.10` (PC2) after routing is set up. (Routing between subnets isn’t enabled yet until Phase 4, so PC0→PC2 should fail now.) On R1, use `show ipv6 interface brief` to confirm IPv6 is up.
+    
+- **Troubleshooting Mission:** Change R1’s IPv6 address or forget `ipv6 unicast-routing` and see what fails; then fix.
+    
+
+**Review:** Be able to calculate subnets and explain IPv6 addressing (128-bit format, e.g. `2001:db8::1`). Confirm all devices have correct masks and gateways. Save snapshot “Phase2.pkt”.

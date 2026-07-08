@@ -1,0 +1,43 @@
+---
+sidebar:
+  order: 8
+sticker: emoji//1f530
+title: Phase 8, Dynamic Routing OSPF
+slug: ""
+date: 2026-01-25
+draft: true
+featured: false
+status: planning
+summary: ""
+description: ""
+cover: ""
+tags: []
+categories: []
+tech_stack: []
+github: ""
+demo: ""
+website: ""
+weight: 8
+---
+**Concepts:** Configure OSPFv2 (single area 0) for faster convergence. OSPF entries are marked `O` in the routing table. (CCNA focuses on single-area OSPF.)
+
+**Tasks:**
+
+- **Enable OSPF:** On each router (R1, R2, R3):
+    
+    ```
+    router ospf 1
+    network 192.168.10.0 0.0.0.255 area 0
+    network 192.168.20.0 0.0.0.255 area 0
+    network 192.168.30.0 0.0.0.255 area 0
+    network 172.16.0.0 0.0.0.3 area 0
+    network 172.16.0.4 0.0.0.3 area 0
+    ```
+    
+- **Verify OSPF:** Use `show ip ospf neighbor` to ensure R1–R2 and R2–R3 have formed adjacency. Check `show ip route` – networks should appear with `O` (OSPF) tags. Ensure that each router’s routing table shows all networks (10.x, 20.x, 30.x) learned via OSPF.
+    
+- **Test Connectivity:** Confirm all inter-network pings still work. If desired, shut down and re-enable OSPF on one router to see routes disappear/reappear.
+    
+
+**Review:** Shut a link and watch OSPF reroute in a second or two, versus the manual fixups static routing needed in Phase 6. Note the difference between RIP and OSPF in `show ip route` (R vs. O). Save “Phase8.pkt”.
+

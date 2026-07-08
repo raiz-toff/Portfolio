@@ -1,0 +1,76 @@
+---
+sidebar:
+  order: 9
+sticker: emoji//1f530
+title: Phase 9  Access Control Lists (ACLs) and NAT
+slug: ""
+date: 2026-01-25
+draft: true
+featured: false
+status: planning
+summary: ""
+description: ""
+cover: ""
+tags: []
+categories: []
+tech_stack: []
+github: ""
+demo: ""
+website: ""
+weight: 9
+---
+**Concepts:** Filter packets with ACLs (standard & extended) and translate addresses with NAT/PAT. Standard ACLs filter by source only, extended by src/dst/protocol. NAT allows internal networks to use private IPs and share a public IP (PAT overload).
+
+**Tasks:**
+
+- **Standard ACL Example:** On R1, block traffic from VLAN20 to VLAN10. For example:
+    
+    ```
+    access-list 10 deny 192.168.20.0 0.0.0.255
+    access-list 10 permit any
+    interface GigabitEthernet0/0.10
+    ip access-group 10 in
+    ```
+    
+    (This prevents devices in VLAN20 from initiating to VLAN10.) Test: ping from PC in VLAN20 to PC in VLAN10 should be denied.
+    
+- **Extended ACL Example:** On R1, allow HTTP/HTTPS but block Telnet from anywhere to 192.168.10.10:
+    
+    ```
+    access-list 100 deny tcp any host 192.168.10.10 eq 23
+    access-list 100 permit ip any any
+    interface GigabitEthernet0/0.10
+    ip access-group 100 in
+    ```
+    
+    Verify with attempts to Telnet vs. HTTP (if you have a server or use Packet Tracer’s built-in “http://” ping).
+    
+- **NAT Configuration:** Assume R3’s Gig0/1 connects to an “Internet” cloud or just to R2’s link. Configure R3 for NAT overload so all internal VLANs share one public IP on that interface:
+    
+    ```
+    R3(config)#access-list 1 permit 192.168.10.0 0.0.0.255
+    R3(config)#interface GigabitEthernet0/1  ! internal facing (connected to SW1/VLAN router)
+    R3(config-if)#ip nat inside
+    R3(config-if)#exit
+    R3(config)#interface Serial0/0      ! external link (to R2 or ISP)
+    R3(config-if)#ip nat outside
+    R3(config)#ip nat inside source list 1 interface Serial0/0 overload
+    ```
+    
+    This “PAT” lets all 192.168.10.x hosts share R3’s S0 IP. Use `show ip nat translations` to verify mappings when PCs access the Internet.
+    
+- **Verify ACLs/NAT:** Use `show access-lists` and `show ip nat statistics`/`show ip nat translations`. Test scenarios:
+    
+    - With NAT set, PCs can ping an external Internet IP (like 8.8.8.8) via R3, confirming NAT is translating.
+        
+    - With ACL on R1, prohibited traffic is blocked (confirm with `show ip interface`).
+        
+- **Troubleshooting Missions:**
+    
+    - Remove `permit ip any any` from an ACL and see all traffic blocked – then add it back.
+        
+    - Forget `ip nat inside` on one interface and see “no PAT” errors. Fix by designating interfaces correctly.
+        
+
+**Review:** Understand difference between filtering (ACL) and address translation. NAT is vital when you have more devices than public IPs. Save “Phase9.pkt”.
+

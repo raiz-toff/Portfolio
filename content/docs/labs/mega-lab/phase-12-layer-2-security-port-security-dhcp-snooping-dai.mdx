@@ -1,0 +1,70 @@
+---
+sidebar:
+  order: 12
+sticker: emoji//1f530
+title: Phase 12 Layer-2 Security (Port-Security, DHCP Snooping, DAI)
+slug: ""
+date: 2026-01-25
+draft: true
+featured: false
+status: planning
+summary: ""
+description: ""
+cover: ""
+tags: []
+categories: []
+tech_stack: []
+github: ""
+demo: ""
+website: ""
+weight: 12
+---
+
+**Concepts:** Apply security features at the switch level to guard against unauthorized devices and ARP attacks. Port Security limits MAC addresses on a port, DHCP Snooping builds a trusted binding table of IP–MAC, and Dynamic ARP Inspection (DAI) uses that table to block ARP spoofing.
+
+**Tasks:**
+
+- **Port Security:** On SW1 (access layer switch), pick an access port (e.g. Fa0/2). Configure:
+    
+    ```
+    SW1(config)#interface Fa0/2
+    SW1(config-if)#switchport port-security
+    SW1(config-if)#switchport port-security maximum 1
+    SW1(config-if)#switchport port-security mac-address sticky
+    SW1(config-if)#exit
+    ```
+    
+    Now only the first connected MAC is allowed. Connect PC0 to Fa0/2 and ping – it learns and is secure. Plug a second device with a different MAC into Fa0/2; it should violate (err-disabled). View the violation with `show port-security interface fa0/2`.
+    
+- **DHCP Snooping:** Enable DHCP snooping globally and per VLAN:
+    
+    ```
+    SW1(config)#ip dhcp snooping
+    SW1(config)#ip dhcp snooping vlan 10,20
+    SW1(config)#interface GigabitEthernet1/1  ! uplink to DHCP server
+    SW1(config-if)#ip dhcp snooping trust
+    ```
+    
+    Now the switch tracks DHCP bindings. Use `show ip dhcp snooping binding`. Try to issue a fake DHCP offer from an untrusted port to verify it’s dropped.
+    
+- **Dynamic ARP Inspection (DAI):** Enable DAI on the switch:
+    
+    ```
+    SW1(config)#ip arp inspection vlan 10,20
+    SW1(config)#interface GigabitEthernet1/1
+    SW1(config-if)#ip arp inspection trust
+    ```
+    
+    DAI will drop any ARP replies that don’t match the DHCP snooping table. Use `show ip arp inspection statistics`. As a test, manually assign a wrong IP on a PC (or use Packet Tracer ARP spoofing tools); valid ARP replies go through, spoofed ones are blocked.
+    
+- **Troubleshooting Missions:**
+    
+    - After a port-security shutdown, recover the port by `shutdown`/`no shutdown` on the interface.
+        
+    - Try sending an ARP packet for an IP/MAC not in the DHCP table and verify DAI blocks it.
+        
+    - On DHCP Snooping: disable `ip dhcp snooping trust` on the correct port and observe DHCP failures (since the DHCP server must be trusted).
+        
+
+**Review:** These measures prevent common attacks. Note the security violation logs (`%PSECURE`) that appear when a port err-disables. Save “Phase12.pkt”.
+

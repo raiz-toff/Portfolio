@@ -1,0 +1,52 @@
+---
+sidebar:
+  order: 7
+sticker: emoji//1f530
+title: Phase 7 Dynamic Routing – RIP
+slug: ""
+date: 2026-01-25
+draft: true
+featured: false
+status: planning
+summary: ""
+description: ""
+cover: ""
+tags: []
+categories: []
+tech_stack: []
+github: ""
+demo: ""
+website: ""
+weight: 7
+---
+**Concepts:** Enable RIP v2 on the routers to automate route exchange. RIP entries appear with code `R` in the routing table. (In CCNA, RIP is mainly for practice and legacy familiarity.)
+
+**Tasks:**
+
+- **Enable RIP:** On each router (R1, R2, R3), enter:
+    
+    ```
+    router rip
+    version 2
+    no auto-summary
+    network 192.168.10.0
+    network 192.168.20.0
+    network 192.168.30.0
+    network 172.16.0.0
+    ```
+    
+    Adjust networks per router as needed (only include networks that router is connected to).
+    
+- **Verify RIP Neighbors:** On each router use `show ip protocols` and `show ip rip database` to see learned routes. Use `show ip route` – entries learned via RIP should have code `R`. For example, R1’s table should now have 192.168.30.0/24 marked `R`.
+    
+- **Connectivity Test:** After RIP convergence (a minute or so), all PCs in all VLANs should ping each other and the router LAN without any static routes.
+    
+- **Troubleshooting Missions:**
+    
+    - If RIP routes don’t appear, ensure `network` statements match the interface networks.
+        
+    - Disable a link (e.g. R2–R3) and watch routes age out. Re-enable and watch RIP re-advertise.
+        
+
+**Review:** Understand that RIP uses hop count (max 15) and regular updates. `show ip route` will show many `R` routes now. Save “Phase7.pkt”.
+

@@ -1,0 +1,14 @@
+{
+  "title": "Projects",
+  "description": "Software & hardware project write-ups",
+  "icon": "Boxes",
+  "root": true,
+  "pages": [
+    "index",
+    "comma",
+    "starlight-glide",
+    "starlight-theme",
+    "virtualdisplay",
+    "..."
+  ]
+}

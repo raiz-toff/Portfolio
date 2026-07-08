@@ -1,0 +1,39 @@
+---
+sidebar:
+  order: 1
+title: Phase 1 Network Fundamentals – Basic Connectivity and OSI
+slug: ""
+date: 2026-01-25
+draft: true
+featured: false
+status: planning
+summary: ""
+description: ""
+cover: ""
+tags: []
+categories: []
+tech_stack: []
+github: ""
+demo: ""
+website: ""
+weight: 1
+sticker: emoji//26fa
+---
+**Concepts:** Basic LAN setup, OSI layers, MAC vs. IP addressing, switching vs. routing. Devices introduced (e.g. Cisco 2960 switch, PCs) and Ethernet cabling (straight-through vs. crossover). Commands: `ipconfig`, `ping`, `arp -a`, `show interfaces`.
+
+**Tasks:**
+
+- **Topology:** Connect **2 PCs** to a **2960 switch** (Cisco 2960-24TT in Packet Tracer). Use straight-through copper cables (PC NIC to switch access ports).
+    
+- **IP Plan:** Use a single IPv4 network, e.g. `10.0.0.0/24`. Assign PC1 = 10.0.0.10/24, PC2 = 10.0.0.11/24 (no default gateway needed yet).
+    
+- **Configure PCs:** On each PC, set the IPv4 address and subnet mask via Desktop > IP Configuration. Verify with `ipconfig` on each PC.
+    
+- **Verify Connectivity:** From PC1, `ping 10.0.0.11` and vice versa. All pings should succeed. Use `arp -a` on a PC to see the MAC address of the other (verifying ARP resolution at Layer 2).
+    
+- **Observe Packets:** Switch to **Simulation mode** in Packet Tracer and ping again. Observe the ARP broadcast and reply, then the ICMP echo. This illustrates OSI Layers 2–3 in action.
+    
+- **Troubleshooting Mission:** Disconnect one cable and confirm pings fail. Then reconnect. Change one port to a mismatched duplex/speed (if simulation allows) and observe errors.
+    
+
+**Review:** Ensure you can explain each step: e.g. why ARP is needed, or why two PCs on the same VLAN communicate without a router. Save the PT file (“Phase1.pkt”) for future reference.

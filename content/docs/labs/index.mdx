@@ -1,0 +1,198 @@
+---
+title: Labs Hub
+description: Hands-on networking implementations, enterprise scenarios, and automation labs.
+sidebar:
+  label: Overview
+  order: -1
+---
+
+A mix of infrastructure builds and focused routing & switching labs. Pick a card below to jump straight into the config.
+
+<style>{`
+  .labs-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 1rem;
+    margin: 1.75rem 0 2.5rem;
+  }
+  .labs-hub-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.35rem;
+    border-radius: 14px;
+    border: 1px solid var(--color-fd-border);
+    background: var(--color-fd-card);
+    text-decoration: none;
+    transition: border-color .2s ease, background .2s ease, transform .2s ease, box-shadow .2s ease;
+  }
+  .labs-hub-card:hover {
+    border-color: color-mix(in oklab, var(--color-fd-primary) 50%, var(--color-fd-border));
+    background: var(--color-fd-accent);
+  }
+  .labs-hub-category {
+    font-size: .67rem;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--color-fd-primary);
+    margin-bottom: .55rem;
+    display: block;
+  }
+  .labs-hub-card h3 {
+    margin: 0 0 .4rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    color: var(--color-fd-card-foreground);
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+  }
+  .labs-hub-card h3 span {
+    display: inline-block;
+    color: var(--color-fd-primary);
+    transition: transform .2s ease;
+  }
+  .labs-hub-card:hover h3 span { transform: translateX(4px); }
+  .labs-hub-card p {
+    margin: 0;
+    font-size: .875rem;
+    line-height: 1.55;
+    color: var(--color-fd-muted-foreground);
+  }
+  .labs-hub-sublinks {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+    padding-top: .8rem;
+    border-top: 1px solid var(--color-fd-border);
+  }
+  .labs-hub-sublink {
+    font-size: .8rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--color-fd-primary);
+    transition: opacity .15s ease;
+  }
+  .labs-hub-sublink:hover { text-decoration: underline; }
+  .labs-hub-sublink-sep { color: var(--color-fd-border); }
+  .labs-hub-tip {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    padding: .9rem 1.15rem;
+    margin-top: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--color-fd-border);
+    border-left: 3px solid var(--color-fd-primary);
+    background: var(--color-fd-card);
+  }
+  .labs-hub-tip svg { color: var(--color-fd-primary); flex-shrink: 0; }
+  .labs-hub-tip p {
+    margin: 0;
+    font-size: .86rem;
+    line-height: 1.5;
+    color: var(--color-fd-muted-foreground);
+  }
+`}</style>
+
+## Networking & Switching
+
+<div className="labs-hub-grid not-content">
+  <a href="/docs/labs/multi-vendor" className="labs-hub-card">
+    <div>
+      <span className="labs-hub-category">Multi-Vendor</span>
+      <h3>Multi-Vendor Interoperability <span>&rarr;</span></h3>
+      <p>Get Cisco and Arista talking to each other over OSPF and BGP.</p>
+    </div>
+  </a>
+
+  <a href="/docs/labs/office-setup" className="labs-hub-card">
+    <div>
+      <span className="labs-hub-category">SOHO Setup</span>
+      <h3>Office Network Setup <span>&rarr;</span></h3>
+      <p>A small office build with VLAN segmentation and ROAS inter-VLAN routing.</p>
+    </div>
+  </a>
+
+  <div className="labs-hub-card">
+    <div>
+      <span className="labs-hub-category">L2 Switching</span>
+      <h3>VLAN &amp; Trunking</h3>
+      <p>Layer 2 segmentation: private VLANs, access ports, and trunking.</p>
+    </div>
+    <div className="labs-hub-sublinks">
+      <a href="/docs/labs/vlan-labs" className="labs-hub-sublink">Overview</a>
+      <span className="labs-hub-sublink-sep">&bull;</span>
+      <a href="/docs/labs/vlan-labs/access-vlan" className="labs-hub-sublink">Access Port</a>
+      <span className="labs-hub-sublink-sep">&bull;</span>
+      <a href="/docs/labs/vlan-labs/vlan-trunk" className="labs-hub-sublink">Trunk Port</a>
+    </div>
+  </div>
+
+  <a href="/docs/labs/vlan-labs/intervlan-routing" className="labs-hub-card">
+    <div>
+      <span className="labs-hub-category">Routing</span>
+      <h3>Inter-VLAN Routing <span>&rarr;</span></h3>
+      <p>Router-on-a-Stick (ROAS) and Layer 3 switching to route between VLANs.</p>
+    </div>
+  </a>
+</div>
+
+## Windows Server & PowerShell
+
+<div className="labs-hub-grid not-content">
+  <div className="labs-hub-card">
+    <div>
+      <span className="labs-hub-category">Windows Server</span>
+      <h3>Active Directory &amp; Services</h3>
+      <p>Deploy AD DS, configure central DHCP servers, and implement Group Policy Objects (GPOs).</p>
+    </div>
+    <div className="labs-hub-sublinks">
+      <a href="/docs/labs/windows-powershell/active-directory" className="labs-hub-sublink">AD Setup</a>
+      <span className="labs-hub-sublink-sep">&bull;</span>
+      <a href="/docs/labs/windows-powershell/dhcp-server" className="labs-hub-sublink">DHCP Server</a>
+      <span className="labs-hub-sublink-sep">&bull;</span>
+      <a href="/docs/labs/windows-powershell/group-policy" className="labs-hub-sublink">Group Policy</a>
+    </div>
+  </div>
+
+  <div className="labs-hub-card">
+    <div>
+      <span className="labs-hub-category">Automation</span>
+      <h3>PowerShell Administration</h3>
+      <p>Automate AD account management, remote software installs, and build full Windows Forms admin GUIs.</p>
+    </div>
+    <div className="labs-hub-sublinks">
+      <a href="/docs/labs/windows-powershell/centralized-deployment" className="labs-hub-sublink">Deployment</a>
+      <span className="labs-hub-sublink-sep">&bull;</span>
+      <a href="/docs/labs/windows-powershell/powershell-gui" className="labs-hub-sublink">GUI Dashboard</a>
+      <span className="labs-hub-sublink-sep">&bull;</span>
+      <a href="/docs/labs/windows-powershell/powershell-advanced" className="labs-hub-sublink">AD Scripts</a>
+    </div>
+  </div>
+
+  <div className="labs-hub-card">
+    <div>
+      <span className="labs-hub-category">Scripting Utilities</span>
+      <h3>Administrative Tools</h3>
+      <p>Targeted utility scripts for directory administration and automated input validation.</p>
+    </div>
+    <div className="labs-hub-sublinks">
+      <a href="/docs/labs/windows-powershell/powershell-basic" className="labs-hub-sublink">Basic AD Script</a>
+      <span className="labs-hub-sublink-sep">&bull;</span>
+      <a href="/docs/labs/windows-powershell/ip-checking" className="labs-hub-sublink">IP Validator</a>
+    </div>
+  </div>
+</div>
+
+<div className="labs-hub-tip not-content">
+  <svg width="16" height="16" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M7.5 0C3.36 0 0 3.36 0 7.5C0 11.64 3.36 15 7.5 15C11.64 15 15 11.64 15 7.5C15 3.36 11.64 0 7.5 0ZM8.25 11.25H6.75V6.75H8.25V11.25ZM8.25 5.25H6.75V3.75H8.25V5.25Z" fill="currentColor"/>
+  </svg>
+  <p>Every lab ships with a topology diagram and copy-paste-ready device configs — pick any card above to get started.</p>
+</div>

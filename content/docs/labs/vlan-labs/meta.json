@@ -1,0 +1,9 @@
+{
+  "title": "VLAN & Trunking Labs",
+  "icon": "Waypoints",
+  "pages": [
+    "access-vlan",
+    "vlan-trunk",
+    "intervlan-routing"
+  ]
+}

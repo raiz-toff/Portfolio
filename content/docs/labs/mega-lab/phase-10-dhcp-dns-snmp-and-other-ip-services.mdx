@@ -1,0 +1,55 @@
+---
+sidebar:
+  order: 10
+sticker: emoji//1f530
+title: Phase 10 DHCP, DNS, SNMP and Other IP Services
+slug: ""
+date: 2026-01-25
+draft: true
+featured: false
+status: planning
+summary: ""
+description: ""
+cover: ""
+tags: []
+categories: []
+tech_stack: []
+github: ""
+demo: ""
+website: ""
+weight: 10
+---
+**Concepts:** Configure network services essential for operations. These include DHCP (automated IP assignment), DNS (name resolution), NTP (time sync), SNMP (monitoring), and logging. In Packet Tracer, you can use the built-in **Server** device to simulate DHCP/DNS servers or configure the router to relay.
+
+**Tasks:**
+
+- **DHCP Server:** On R1 (or a dedicated router), set up DHCP pools:
+    
+    ```
+    R1(config)#ip dhcp excluded-address 192.168.10.1 192.168.10.5
+    R1(config)#ip dhcp pool VLAN10
+    R1(dhcp-config)#network 192.168.10.0 255.255.255.0
+    R1(dhcp-config)#default-router 192.168.10.1
+    R1(dhcp-config)#dns-server 192.168.20.254
+    ```
+    
+    (Repeat for VLAN20 network). On the PCs, set IPv4 to “DHCP” and verify they receive the correct IP, mask, gateway.
+    
+- **DNS Server:** In PT, add a **Server** device, enable its DNS service, and add a hostname entry (e.g. `www.locallab.com` → 192.168.10.10). Configure PCs to use the DNS Server’s IP. Test resolution with `nslookup www.locallab.com` on a PC (should return the IP).
+    
+- **NTP & SNMP:** On routers, point to the DNS server as NTP:  
+    `R1(config)#ntp server 192.168.20.254`.  
+    Configure SNMP read-only: `R1(config)#snmp-server community public RO`. Use `show logging` to see logs, and `show snmp` to verify.
+    
+- **Syslog:** Enable logging to an external server (in PT use **Syslog** server or use router’s buffer):  
+    `R1(config)#logging host 192.168.20.254` (Syslog server IP) and `logging buffered 4096`. Generate a log (e.g. `reload in 1`). Check logs appear on server.
+    
+- **Troubleshooting Missions:**
+    
+    - Break DHCP: e.g. misconfigure the excluded range (overlap DHCP range) and see that some addresses don’t get assigned.
+        
+    - DNS typos: try resolving an unknown name to see failure, then fix.
+        
+
+**Review:** These services automate network management. Make sure clients can obtain an IP via DHCP and resolve names via DNS. Check time sync and monitoring configurations. Save “Phase10.pkt”.
+

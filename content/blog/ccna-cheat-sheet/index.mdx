@@ -1,0 +1,252 @@
+---
+title: CCNA Ultimate Quick-Revision Cheat Sheet
+date: 2025-11-01
+description: Ultimate CRAMP note for CCNA
+cover: "/blog/covers/ccna-cheat-sheet.png"
+tags:
+  - CCNA
+  - Cisco
+  - CheatSheet
+featured: true
+---
+
+---
+
+# CCNA Cheat Sheet — Quick & Easy Revision Guide
+
+This is a **quick and easy CCNA cheat sheet** I created while studying.  
+It includes all the important things you need to remember—like port numbers, routing protocols, IP ranges, security basics, QoS markings, and more.
+
+Everything is organized in clean tables so you can **revise fast** and **cram before the exam**.  
+If you're preparing for CCNA or just want a quick networking refresher, this guide will help you a lot.
+
+Enjoy learning and happy studying!
+
+---
+
+## **1. TCP / UDP Port Numbers**
+
+| **Protocol**       | **Port**    | **Type** | **Description**         |
+| ------------------ | ----------- | -------- | ----------------------- |
+| FTP (Data/Control) | 20 / 21     | TCP      | File transfers          |
+| SSH                | 22          | TCP      | Secure remote login     |
+| Telnet             | 23          | TCP      | Insecure remote login   |
+| SMTP               | 25          | TCP      | Email sending           |
+| TACACS+            | 49          | TCP      | AAA (Cisco)             |
+| DNS                | 53          | UDP/TCP  | Name resolution         |
+| DHCP               | 67 / 68     | UDP      | Dynamic IP allocation   |
+| TFTP               | 69          | UDP      | Simple file transfer    |
+| HTTP               | 80          | TCP      | Web traffic             |
+| POP3               | 110         | TCP      | Email retrieval         |
+| NTP                | 123         | UDP      | Time synchronization    |
+| IMAP4              | 143         | TCP      | Advanced mail retrieval |
+| SNMP               | 161 / 162   | UDP      | Network monitoring      |
+| BGP                | 179         | TCP      | Exterior routing        |
+| LDAP               | 389         | TCP      | Directory services      |
+| HTTPS              | 443         | TCP      | Encrypted web           |
+| SYSLOG             | 514         | UDP      | System logging          |
+| RIP                | 520         | UDP      | Routing updates (IPv4)  |
+| RIPng              | 521         | UDP      | Routing updates (IPv6)  |
+| RADIUS             | 1812 / 1813 | UDP      | AAA (Auth/Acct)         |
+| HSRP               | 1985        | UDP      | Gateway redundancy      |
+| GLBP               | 3222        | UDP      | Load balancing gateway  |
+| CAPWAP             | 5246 / 5247 | UDP      | WLC to AP control/data  |
+| Puppet             | 8140        | TCP      | Puppet pull model       |
+| CHEF               | 10002       | TCP      | Chef push model         |
+
+## **2. Protocol Numbers (Not Port Numbers)**
+
+- OSPF → **89**
+- EIGRP → **88**
+- VRRP → **112**
+- IPsec AH → **51**
+- IPsec ESP → **50**
+
+---
+
+## **3. Administrative Distance (AD)**
+
+| **Source**     | **AD** | **Notes**           |
+| -------------- | ------ | ------------------- |
+| Connected      | 0      | Most trusted        |
+| Static         | 1      | Manual route        |
+| EIGRP Summary  | 5      | Auto-summary route  |
+| eBGP           | 20     | External BGP        |
+| EIGRP Internal | 90     | Inside same AS      |
+| OSPF           | 110    | Link-state IGP      |
+| IS-IS          | 115    | Intermediate System |
+| RIP            | 120    | Distance vector     |
+| EIGRP External | 170    | Redistributed       |
+| iBGP           | 200    | Internal BGP        |
+| Unknown        | 255    | Never used          |
+
+---
+
+## **4. IEEE Standards**
+
+| **Standard**  | **Description**           |
+| ------------- | ------------------------- |
+| 802.3         | Ethernet (LAN)            |
+| 802.1Q        | VLAN trunk tagging        |
+| 802.1D        | STP                       |
+| 802.1w        | Rapid STP                 |
+| 802.1s        | Multiple STP              |
+| 802.1X        | Port-based access control |
+| 802.1AB       | LLDP                      |
+| 802.3af/at/bt | PoE / PoE+ / UPOE         |
+| 802.11 a–ax   | Wi-Fi standards           |
+
+---
+
+## **5. Key MAC Addresses**
+
+| **Protocol / Service** | **MAC Address**       |
+| ---------------------- | --------------------- |
+| CDP                    | 01:00:0C:CC:CC:CC     |
+| LLDP                   | 01:80:C2:00:00:0E     |
+| STP                    | 01:80:C2:00:00:00     |
+| PVST+                  | 01:00:0C:CC:CC:CD     |
+| HSRPv1                 | 0000.0C07.AC**XX**    |
+| HSRPv2                 | 0000.0C9F.F**XXX**    |
+| VRRP                   | 0000.5E00.01**XX**    |
+| GLBP                   | 0007.B400.**XXYY**    |
+| IPv4 Multicast         | 01:00:5E:**00:00:XX** |
+| IPv6 Multicast         | 33:33:**XX:XX:XX:XX** |
+
+---
+
+## **6. IPv4 Addressing**
+
+| **Type**   | **Range**       | **Notes**     |
+| ---------- | --------------- | ------------- |
+| Private A  | 10.0.0.0/8      |               |
+| Private B  | 172.16.0.0/12   |               |
+| Private C  | 192.168.0.0/16  |               |
+| Loopback   | 127.0.0.0/8     | Localhost     |
+| Link-local | 169.254.0.0/16  | APIPA         |
+| Multicast  | 224.0.0.0/4     | Class D       |
+| Reserved   | 240.0.0.0/4     | Class E       |
+| Broadcast  | 255.255.255.255 | Local network |
+
+---
+
+## **7. IPv6 Addressing**
+
+| **Type**       | **Prefix**          | **Notes**    |
+| -------------- | ------------------- | ------------ |
+| Unspecified    | ::                  | No address   |
+| Loopback       | ::1                 | Localhost    |
+| Link-local     | fe80::/10           | Non-routable |
+| Unique Local   | fc00::/7 (fd00::/8) | Private      |
+| Global Unicast | 2000::/3            | Public       |
+| Multicast      | ff00::/8            | Group comms  |
+| Solicited Node | ff02::1:ffXX:XXXX   | Used in ND   |
+
+---
+
+## **8. IPv4 Multicast Addresses**
+
+| **Protocol**     | **Address** |
+| ---------------- | ----------- |
+| All Hosts        | 224.0.0.1   |
+| All Routers      | 224.0.0.2   |
+| OSPF All Routers | 224.0.0.5   |
+| OSPF DR/BDR      | 224.0.0.6   |
+| RIPv2            | 224.0.0.9   |
+| EIGRP            | 224.0.0.10  |
+| VRRP             | 224.0.0.18  |
+| IGMPv3           | 224.0.0.22  |
+| HSRPv2 / GLBP    | 224.0.0.102 |
+
+---
+
+## **9. IPv6 Multicast Addresses**
+
+| **Protocol**   | **Address**       |
+| -------------- | ----------------- |
+| All Nodes      | ff02::1           |
+| All Routers    | ff02::2           |
+| OSPFv3 All     | ff02::5           |
+| OSPFv3 DR      | ff02::6           |
+| RIPng          | ff02::9           |
+| EIGRPv6        | ff02::A           |
+| DHCPv6 Agents  | ff02::1:2         |
+| Solicited Node | ff02::1:ffXX:XXXX |
+
+---
+
+## **10. Security Essentials**
+
+| **Term** | **Description**                           |
+| -------- | ----------------------------------------- |
+| AAA      | Authentication, Authorization, Accounting |
+| RADIUS   | UDP 1812/1813 – encrypts password only    |
+| TACACS+  | TCP 49 – encrypts full payload            |
+| PAP      | Plaintext auth                            |
+| CHAP     | Encrypted handshake                       |
+| 802.1X   | Port-based NAC using RADIUS               |
+| IPsec    | AH 51, ESP 50, IKE (UDP 500)              |
+| SSH      | Secure CLI (TCP 22)                       |
+| HTTPS    | Secure web (TCP 443)                      |
+| ACLs     | Std (1–99), Ext (100–199)                 |
+| NAT/PAT  | IP translation (PAT = overload)           |
+
+---
+
+## **11. Switch Port Security**
+
+| **Feature** | **Details**                     |
+| ----------- | ------------------------------- |
+| Modes       | Protect, Restrict, Shutdown     |
+| Sticky      | Learns & saves MACs             |
+| Default     | Shutdown on violation           |
+| Recovery    | Manual (`shut/no shut`) or auto |
+
+---
+
+## **12. Syslog Severity Levels**
+
+| **Level** | **Name**      | **Mnemonic** |
+| --------- | ------------- | ------------ |
+| 0         | Emergency     | Every        |
+| 1         | Alert         | Awesome      |
+| 2         | Critical      | Cisco        |
+| 3         | Error         | Engineer     |
+| 4         | Warning       | Will         |
+| 5         | Notice        | Need         |
+| 6         | Informational | Icecream     |
+| 7         | Debug         | Daily        |
+
+---
+
+## **13. Wireless Security**
+
+| **Type**        | **Encryption**  | **Notes**   |
+| --------------- | --------------- | ----------- |
+| WEP             | RC4             | Insecure    |
+| WPA             | TKIP            | Obsolete    |
+| WPA2            | AES-CCMP        | Secure      |
+| WPA3            | SAE             | Most secure |
+| WPA2-PSK        | Shared key      |             |
+| WPA2-Enterprise | 802.1X + RADIUS | Enterprise  |
+
+---
+
+## **14. QoS & Markings**
+
+| **Field**     | **Bits** | **Example**       |
+| ------------- | -------- | ----------------- |
+| CoS (802.1p)  | 3 bits   | L2 switch tagging |
+| DSCP (L3)     | 6 bits   | EF = 46 (voice)   |
+| IP Precedence | 3 bits   | Legacy            |
+
+## **15 .Traffic Types**
+
+| **Type** | **Data Type** | **Example**   |
+| -------- | ------------- | ------------- |
+| Platinum | Voice         | Voice traffic |
+| Gold     | Video         | Video traffic |
+| Silver   | Standard      | Web apps      |
+| Bronze   | Best Effort   | Basic traffic |
+
+---

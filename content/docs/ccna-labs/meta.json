@@ -1,0 +1,15 @@
+{
+  "title": "CCNA Labs",
+  "icon": "Network",
+  "root": true,
+  "pages": [
+    "index",
+    "1.0-network-f",
+    "2.0-network-a",
+    "3.0-ip-connect",
+    "4.0-ip-services",
+    "5.0-security-f",
+    "6.0-auto-and-p",
+    "..."
+  ]
+}

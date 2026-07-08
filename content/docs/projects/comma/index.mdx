@@ -1,0 +1,23 @@
+---
+title: Comma
+description: A privacy-first earnings tracker for gig workers.
+sidebar:
+  order: 1
+---
+
+Comma is a **privacy-first earnings tracker** I built for gig workers — people delivering for DoorDash, Uber Eats, SkipTheDishes, Instacart, Amazon Flex and the like. It tracks shifts with live GPS, splits active delivery miles from dead miles, logs expenses, and works out tax set-asides for your market (US, Canada, UK, and Nepal so far).
+
+The whole thing is local-first: no account, no backend, data never leaves your device unless you opt into encrypted backup to your own Google Drive.
+
+It exists in two forms that share the same backup format:
+
+- **[comma](https://github.com/raiz-toff/comma)** — the original offline-first PWA. Vanilla JavaScript with IndexedDB, runs entirely in the browser.
+- **[commaApp](https://github.com/raiz-toff/commaApp)** — the newer native Android app built with Expo and React Native, with GPS shift tracking, multi-vehicle support, analytics, and reports.
+
+Comma now has its own documentation site, so everything — architecture, guides for adding countries and platforms, changelog — lives there:
+
+<div class="not-content" style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem;">
+  <LinkButton href="https://comma-docs.vercel.app/" icon="external" size="large">Documentation</LinkButton>
+  <LinkButton href="https://github.com/raiz-toff/comma" variant="secondary" icon="github" size="large">comma (PWA)</LinkButton>
+  <LinkButton href="https://github.com/raiz-toff/commaApp" variant="secondary" icon="github" size="large">commaApp (Native)</LinkButton>
+</div>

@@ -1,0 +1,38 @@
+---
+title: Starlight Glide
+description: An animated Table of Contents indicator for Starlight.
+featured: true
+tags:
+  - Astro
+  - Starlight
+  - UI
+  - Vibe Coding
+categories:
+  - Web Development
+  - Plugins
+tech_stack:
+  - Astro
+  - Starlight
+  - Vanilla JS
+  - CSS Variables
+pagefind: true
+sidebar:
+  hidden: false
+---
+
+I liked the animated TOC indicator in Fumadocs and wanted the same thing in Starlight. Couldn't replicate their exact CSS, so I built it as a native plugin instead.
+
+<div style="margin-top: 1.5rem; display: flex; gap: 1rem">
+  <LinkButton href="https://starlight-glide.vercel.app/getting-started/" icon="external">
+    Get Started
+  </LinkButton>
+  <LinkButton href="https://github.com/raiz-toff/starlight-glide" icon="github" variant="secondary">
+    View Source
+  </LinkButton>
+</div>
+
+## What it does
+
+Adds a "snake" indicator to your TOC that stretches and snaps between headings as you scroll. On mobile it swaps that out for a circular reading progress ring in the navbar.
+
+No animation libraries — just `IntersectionObserver` and some SVG path math. Styles use namespaced CSS variables so it picks up your existing theme automatically.

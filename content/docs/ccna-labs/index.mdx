@@ -1,0 +1,196 @@
+---
+title: "CCNA Labs Hub"
+description: "Hands-on networking labs for every section of the Cisco CCNA 200-301 exam."
+draft: true
+featured: false
+tags: []
+categories: []
+tech_stack: []
+sidebar:
+  order: -1
+  label: "Overview"
+  hidden: false
+pagefind: true
+---
+
+Theory only gets you so far. These labs cover all six core areas of the **Cisco CCNA 200-301** and put you directly on the CLI.
+
+<style>{`
+  .labs-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2.5rem 0;
+  }
+  .labs-hub-card {
+    background: rgba(255, 255, 255, 0.01) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 8px !important;
+    padding: 1.5rem !important;
+    transition: all 0.2s ease-in-out !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    text-decoration: none !important;
+  }
+  .labs-hub-card:hover {
+    background: rgba(255, 255, 255, 0.025) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+  .labs-hub-category {
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    margin-bottom: 0.5rem !important;
+    display: block !important;
+  }
+  .labs-hub-card h3 {
+    margin: 0 0 0.5rem 0 !important;
+    font-size: 1.15rem !important;
+    font-weight: 600 !important;
+    color: var(--sl-color-white, #ffffff) !important;
+    letter-spacing: -0.01em !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+  }
+  .labs-hub-card h3 span {
+    transition: transform 0.2s ease !important;
+    display: inline-block !important;
+  }
+  .labs-hub-card:hover h3 span {
+    transform: translateX(3px) !important;
+  }
+  .labs-hub-card p {
+    margin: 0 !important;
+    font-size: 0.9rem !important;
+    color: #94a3b8 !important;
+    line-height: 1.5 !important;
+  }
+  .labs-hub-tip {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    background: rgba(255, 255, 255, 0.015) !important;
+    border: 1px dashed rgba(255, 255, 255, 0.08) !important;
+    border-radius: 6px !important;
+    padding: 1rem 1.25rem !important;
+    margin-top: 3rem !important;
+  }
+  .labs-hub-tip-icon {
+    color: #f59e0b !important;
+    font-size: 1.1rem !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+  }
+  .labs-hub-tip-text {
+    font-size: 0.85rem !important;
+    color: #94a3b8 !important;
+    margin: 0 !important;
+    line-height: 1.5 !important;
+  }
+  .labs-hub-tip-text a {
+    color: #f59e0b !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    border-bottom: 1px solid rgba(245, 158, 11, 0.2) !important;
+    transition: all 0.15s ease-in-out !important;
+  }
+  .labs-hub-tip-text a:hover {
+    color: #fff !important;
+    border-bottom-color: #fff !important;
+  }
+  :root[data-theme='light'] .labs-hub-card {
+    border: none !important;
+    background: rgba(0, 0, 0, 0.02) !important;
+  }
+  :root[data-theme='light'] .labs-hub-card:hover {
+    background: rgba(0, 0, 0, 0.035) !important;
+  }
+  :root[data-theme='light'] .labs-hub-card p {
+    color: #475569 !important;
+  }
+  :root[data-theme='light'] .labs-hub-tip {
+    border: none !important;
+    background: rgba(0, 0, 0, 0.02) !important;
+  }
+  :root[data-theme='light'] .labs-hub-tip-text {
+    color: #475569 !important;
+  }
+  :root[data-theme='light'] .labs-hub-tip-text a:hover {
+    color: #0f172a !important;
+    border-bottom-color: #0f172a !important;
+  }
+`}</style>
+
+<div class="labs-hub-grid not-content">
+  <a href="/ccna-labs/10-network-f/" class="labs-hub-card">
+    <div>
+      <span class="labs-hub-category">CCNA Section 1</span>
+      <h3>Network Fundamentals <span>&rarr;</span></h3>
+      <p>The essentials. OSI model, Ethernet, and mastering IPv4 and IPv6 addressing.</p>
+    </div>
+  </a>
+
+  <a href="/ccna-labs/20-network-a/" class="labs-hub-card">
+    <div>
+      <span class="labs-hub-category">CCNA Section 2</span>
+      <h3>Network Access <span>&rarr;</span></h3>
+      <p>Layer 2 configuration. VLANs, 802.1Q trunks, STP, and EtherChannel.</p>
+    </div>
+  </a>
+
+  <a href="/ccna-labs/30-ip-connect/" class="labs-hub-card">
+    <div>
+      <span class="labs-hub-category">CCNA Section 3</span>
+      <h3>IP Connectivity <span>&rarr;</span></h3>
+      <p>Routing in action. Build and troubleshoot static routes, single-area OSPFv2, and Router-on-a-Stick.</p>
+    </div>
+  </a>
+
+  <a href="/ccna-labs/40-ip-services/" class="labs-hub-card">
+    <div>
+      <span class="labs-hub-category">CCNA Section 4</span>
+      <h3>IP Services <span>&rarr;</span></h3>
+      <p>Setting up the critical background infrastructure: NAT, DHCP, NTP, and SNMP.</p>
+    </div>
+  </a>
+
+  <a href="/ccna-labs/50-security-f/" class="labs-hub-card">
+    <div>
+      <span class="labs-hub-category">CCNA Section 5</span>
+      <h3>Security Fundamentals <span>&rarr;</span></h3>
+      <p>Hardening the switch. Configure Port Security, DHCP Snooping, DAI, and ACLs.</p>
+    </div>
+  </a>
+
+  <a href="/ccna-labs/60-auto-and-p/" class="labs-hub-card">
+    <div>
+      <span class="labs-hub-category">CCNA Section 6</span>
+      <h3>Automation & Programmability <span>&rarr;</span></h3>
+      <p>Modern networking. API basics, JSON structures, and seeing how SDA and DNA Center actually operate.</p>
+    </div>
+  </a>
+</div>
+
+## The Lab Environment
+
+Run these using whatever simulator you have on hand. Top recommendations:
+
+* **Cisco Modeling Labs (CML):** The most realistic experience.
+* **Cisco Packet Tracer:** Best for a fast, lightweight setup.
+* **GNS3 / EVE-NG:** Ideal for testing how Cisco hardware interacts with other vendors.
+
+<div class="labs-hub-tip not-content">
+  <span class="labs-hub-tip-icon">
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle;">
+      <path d="M7.5 0C3.36 0 0 3.36 0 7.5C0 11.64 3.36 15 7.5 15C11.64 15 15 11.64 15 7.5C15 3.36 11.64 0 7.5 0ZM8.25 11.25H6.75V6.75H8.25V11.25ZM8.25 5.25H6.75V3.75H8.25V5.25Z" fill="currentColor"/>
+    </svg>
+  </span>
+  <p class="labs-hub-tip-text">
+    Every lab comes with a topology file, a configuration guide, and the specific commands you need to verify your work.
+  </p>
+</div>

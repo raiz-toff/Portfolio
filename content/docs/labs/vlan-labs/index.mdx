@@ -1,0 +1,34 @@
+---
+title: VLAN & Trunking Labs
+description: A collection of labs focused on Layer 2 segmentation, VLAN trunking, and Inter-VLAN routing.
+sidebar:
+  label: Overview
+  order: -1
+---
+Three **VLAN & Trunking** labs, from port-based access VLANs up to Router-on-a-Stick.
+
+<CardGrid>
+  <LinkCard 
+    title="VLAN Access Ports"  
+    description="Configured port-based segmentation on Cisco switches." 
+    href="/labs/vlan-labs/access-vlan/" 
+  />
+  <LinkCard 
+    title="VLAN Trunking (802.1Q)" 
+    description="Set up trunk links and manage VLANs across multiple switches." 
+    href="/labs/vlan-labs/vlan-trunk/" 
+  />
+  <LinkCard 
+    title="Inter-VLAN Routing" 
+    description="Route traffic between VLANs using ROAS and L3 switching." 
+    href="/labs/vlan-labs/intervlan-routing/" 
+  />
+</CardGrid>
+
+---
+
+### Key Concepts Covered
+- **802.1Q Encapsulation**: Tagging frames for transport across trunk links.
+- **VTP (VLAN Trunking Protocol)**: Managing VLAN databases across multiple switches.
+- **Router-on-a-Stick (ROAS)**: Using sub-interfaces for efficient Inter-VLAN communication.
+- **Access vs. Trunk Ports**: Understanding port membership and tagging requirements.

@@ -1,0 +1,63 @@
+---
+sidebar:
+  order: 13
+sticker: emoji//1f530
+title: Phase 13 Device Management and Automation
+slug: ""
+date: 2026-01-25
+draft: true
+featured: false
+status: planning
+summary: ""
+description: ""
+cover: ""
+tags: []
+categories: []
+tech_stack: []
+github: ""
+demo: ""
+website: ""
+weight: 13
+---
+**Concepts:** Configure secure device management (SSH, SNMP, logging) and introduce basic network automation (CLI scripting or Python). SSH replaces Telnet for secure CLI login; SNMP enables monitoring; automation (e.g. Python+Netmiko) demonstrates programmability.
+
+**Tasks:**
+
+- **SSH Access:** On each router/switch, set a hostname and domain name, then generate RSA keys:
+    
+    ```
+    R1(config)#hostname R1
+    R1(config)#ip domain-name local.lab
+    R1(config)#crypto key generate rsa
+    R1(config)#username admin privilege 15 password Pa$$w0rd
+    R1(config-line)#line vty 0 4
+    R1(config-line)#transport input ssh
+    R1(config-line)#login local
+    ```
+    
+    Disable Telnet: `transport input ssh` means only SSH is allowed. From a PC, use Packet Tracer’s SSH client to connect to R1 (IP 192.168.10.1) using admin credentials.
+    
+- **SNMP Configuration:** On R1: `snmp-server community ciscoRO RO` (read-only). From a SNMP manager or simply `show snmp community`, verify it’s set.
+    
+- **Logging:** Configure syslog: `logging buffered 4096`, and set a syslog host (if you have a Syslog server in PT, e.g. 192.168.20.254). Use `show logging` to view logs. Generate an event (e.g. a bad login attempt) and confirm it logs.
+    
+- **Basic Automation (Python/Netmiko):** On your PC/lab machine outside Packet Tracer, write a simple Python script using Netmiko:
+    
+    ```python
+    from netmiko import ConnectHandler
+    device = {
+        'device_type': 'cisco_ios',
+        'host': '192.168.10.1',
+        'username': 'admin',
+        'password': 'Pa$$w0rd',
+    }
+    net_connect = ConnectHandler(**device)
+    output = net_connect.send_command("show ip interface brief")
+    print(output)
+    ```
+    
+    This script SSH-es into R1 and runs a command. (Packet Tracer can’t execute Python, but you can try this on a live lab or Cisco dev environment.) Alternatively, use Packet Tracer’s _CLI Scripting_ (Tcl scripts) to automate repetitive tasks. The goal is simply to appreciate how scripting can automate network tasks.
+    
+
+**Review:** Ensure you can SSH into devices and see logs/SNMP stats. Understand why SSH is preferred (encrypted). Confirm automation output (or explain what the Python code does). Save “Phase13.pkt”.
+

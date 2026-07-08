@@ -1,0 +1,67 @@
+---
+sidebar:
+  order: 6
+title: Phase 6 Static Routing (Multi-Router Network)
+slug: ""
+date: 2026-01-25
+draft: true
+featured: false
+status: planning
+summary: ""
+description: ""
+cover: ""
+tags: []
+categories: []
+tech_stack: []
+github: ""
+demo: ""
+website: ""
+weight: 6
+---
+**Concepts:** Build a multi-site network with static routes. This covers routing table entries (`S` for static) and basic routing logic.
+
+**Tasks:**
+
+- **Extend Topology:** Add two more routers, **R2** and **R3** (Cisco 2911), connecting them in series. For example: R1↔R2↔R3. Use serial or Gigabit links. For concreteness:
+    
+    - R1 (from VLAN router) connect Gi0/1 to R2 Gi0/0.
+        
+    - R2 Gi0/1 to R3 Gi0/0.
+        
+    - Also attach a new LAN behind R3 (e.g. Switch + PC4) in network 192.168.30.0/24.
+        
+- **IP Addressing:**
+    
+    - R1–R2 link: use `172.16.0.0/30` (R1 .1, R2 .2).
+        
+    - R2–R3 link: use `172.16.0.4/30` (R2 .5, R3 .6).
+        
+    - R3 LAN: 192.168.30.0/24 (PC4 = .10, gateway R3 = 192.168.30.1).
+        
+- **Configure Static Routes:**
+    
+    - On **R1**, add routes for R3’s LAN:  
+        `ip route 192.168.30.0 255.255.255.0 172.16.0.2`.
+        
+    - On **R2**, route to R1’s VLAN networks and R3’s LAN:
+        
+        ```
+        ip route 192.168.10.0 255.255.255.0 172.16.0.1
+        ip route 192.168.20.0 255.255.255.0 172.16.0.1
+        ip route 192.168.30.0 255.255.255.0 172.16.0.6
+        ```
+        
+    - On **R3**, route to R1’s VLANs:  
+        `ip route 192.168.10.0 255.255.255.0 172.16.0.5` (and similarly for 192.168.20.0 via 172.16.0.5).
+        
+- **Verify Routes:** Use `show ip route` on each router to ensure the static routes (`S`) are present. Ping from a PC in VLAN10 (behind R1) to PC4 (behind R3). It should succeed if static routes are correct.
+    
+- **Troubleshooting Missions:**
+    
+    - Introduce an error: e.g. use wrong next-hop IP on R2. Observe ping failure and missing route. Correct the next-hop to fix.
+        
+    - Verify with `traceroute` to see hops R1→R2→R3.
+        
+
+**Review:** You should now be able to read a `show ip route` table and trace a packet from VLAN10 to PC4 hop by hop, R1→R2→R3, by hand. Save “Phase6.pkt”.
+

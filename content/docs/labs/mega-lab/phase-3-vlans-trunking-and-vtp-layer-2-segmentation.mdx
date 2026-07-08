@@ -1,0 +1,45 @@
+---
+sidebar:
+  order: 3
+title: Phase 3 VLANs, Trunking, and VTP (Layer 2 Segmentation)
+slug: ""
+date: 2026-01-25
+draft: true
+featured: false
+status: planning
+weight: 3
+summary: ""
+description: ""
+cover: ""
+tags: []
+categories: []
+tech_stack: []
+github: ""
+demo: ""
+website: ""
+---
+**Concepts:** Virtual LANs isolate broadcast domains. Configure VLANs on switches, use 802.1Q trunks for inter-switch links, and optionally VTP for VLAN management. Layer 2 loops will appear in the next phase.
+
+**Tasks:**
+
+- **Topology:** Use **2×2960 switches** (SW1, SW2) and connect them (e.g. Fa0/24 ↔ Fa0/24). Connect existing PCs: move PC0, PC1 to SW1 ports, and PC2, PC3 to SW2 for new subnets.
+    
+- **Configure VTP:** On SW1, set `vtp domain CCNA_LAB` and `vtp mode server`; on SW2, `vtp mode client` with same domain. Assign a VTP password.
+    
+- **Create VLANs:** On SW1, create VLAN10 “HR” and VLAN20 “IT”. Since SW2 is in the same VTP domain (server-client), these VLANs auto-propagate. Verify with `show vlan brief` on both switches.
+    
+- **Assign Ports:** Put PC0 and PC2 into VLAN10 (`switchport access vlan 10` on their ports) and PC1/PC3 into VLAN20. Confirm `show vlan` lists the ports. PC IPs: move them to matching subnets, e.g. VLAN10 uses 192.168.10.0/24, VLAN20 uses 192.168.20.0/24 (so PC0=192.168.10.10 in VLAN10, PC1=192.168.20.10 in VLAN20, using R1 as future router).
+    
+- **Trunk Link:** On SW1 and SW2, set Fa0/24 to `switchport mode trunk`. Use `switchport trunk native 99` (optional) and allow VLANs 10,20. Verify with `show interfaces trunk`. Ensure VLANs pass over the link.
+    
+- **Verify Segmentation:** PCs in the same VLAN on different switches should ping each other (once R1 routes later), but cross-VLAN should fail (no router yet). Test ping between PC0→PC2 (same VLAN) vs PC0→PC1 (different VLAN; should fail).
+    
+- **Troubleshooting Missions:**
+    
+    - Intentionally misconfigure the trunk as `access` on one side and see VLANs vanish on SW2. Fix it.
+        
+    - Change SW2 to VTP transparent mode and observe that VLANs no longer sync. Investigate and restore the VTP mode to client.
+        
+
+**Review:** Understand how VLANs separate traffic and how trunks carry multiple VLANs. Use `show vtp status` to confirm the domain synced and `show interfaces trunk` to confirm VLANs cross the link. Save “Phase3.pkt”.
+

@@ -1,0 +1,53 @@
+---
+sidebar:
+  order: 5
+title: Phase 5  Spanning Tree (RSTP) and EtherChannel
+slug: ""
+date: 2026-01-25
+draft: true
+featured: false
+status: planning
+summary: ""
+description: ""
+cover: ""
+tags: []
+categories: []
+tech_stack: []
+github: ""
+demo: ""
+website: ""
+weight: 5
+---
+**Concepts:** Introduce redundancy without loops. Spanning Tree Protocol (Rapid PVST+) will block redundant links and elect a root bridge. EtherChannel bundles multiple physical links into one logical link (LACP). Also practice STP enhancements like PortFast.
+
+**Tasks:**
+
+- **Add a Third Switch:** Insert **Switch3 (2960)** and connect it to SW1 and SW2, forming a loop (e.g. SW1-SW3 and SW2-SW3 links).
+    
+- **Verify STP:** By default Rapid PVST+ is enabled. Use `show spanning-tree vlan 10` on SW1; one of the redundant ports on SW3 or SW2 will be in “Blocking” state. Identify the root bridge (it’s the switch with lowest priority/MAC by default).
+    
+- **Change Root Bridge:** On SW1, run `spanning-tree vlan 10 priority 4096` to make SW1 the root. Recheck `show spanning-tree`; now SW1’s ports are designated, others adjust accordingly.
+    
+- **Enable PortFast:** On edge ports (access ports to PCs), apply `spanning-tree portfast` so hosts can immediately use the link without delay. Confirm with `show spanning-tree interface Fa0/x portfast`.
+    
+- **Configure EtherChannel:** Create a port-channel between SW1 and SW2. On SW1:
+    
+    ```
+    SW1(config)#interface range Fa0/1-2
+    SW1(config-if-range)#switchport mode trunk
+    SW1(config-if-range)#channel-group 1 mode active
+    ```
+    
+    On SW2 do the same on the corresponding ports. This creates a Port-Channel1 link aggregating Fa0/1-2. Verify with `show etherchannel summary` (should show LACP bundle) and `show interface Port-channel 1`. The previous STP block on one of those links should now be prevented (since it’s one logical link).
+    
+- **Test Connectivity:** Ensure all VLANs still pass traffic. Use ping between PCs and trace which links carry traffic now (`show spanning-tree` and `show etherchannel`).
+    
+- **Troubleshooting Missions:**
+    
+    - Manually shut down one physical link in the bundle and confirm the channel stays up and traffic keeps flowing over the remaining link.
+        
+    - Experiment: set mismatched native VLAN on EtherChannel ports and see the channel fail. Fix by configuring matching VLANs.
+        
+
+**Review:** Understand how STP prevents loops and how EtherChannel provides both redundancy and higher bandwidth. Save “Phase5.pkt”.
+

@@ -1,0 +1,62 @@
+---
+sidebar:
+  order: 11
+sticker: emoji//1f530
+title: Phase 11 WAN Links (HDLC and PPP)
+slug: ""
+date: 2026-01-25
+draft: true
+featured: false
+status: planning
+summary: ""
+description: ""
+cover: ""
+tags: []
+categories: []
+tech_stack: []
+github: ""
+demo: ""
+website: ""
+weight: 11
+---
+**Concepts:** Configure point-to-point WAN links between routers. By default Cisco routers use Cisco HDLC on serial links. Alternatively, enable PPP for features like authentication (CHAP/PAP) and multilink (if needed).
+
+**Tasks:**
+
+- **Physical Setup:** Connect R2 Serial0/0 to R3 Serial0/1 with a DCE cable. On the DCE side, set `clock rate 64000` (R2 if it’s DCE).
+    
+- **HDLC (Default):** Without any change, the link will come up with HDLC. Use `show interfaces s0/0` to see “Encapsulation HDLC”. Ping across R2–R3 to verify connectivity.
+    
+- **PPP Encapsulation:** Change to PPP:
+    
+    ```
+    R2(config-if)#encapsulation ppp
+    R3(config-if)#encapsulation ppp
+    ```
+    
+    Both routers will negotiate. Use `show interfaces serial 0/0` to confirm “Encapsulation PPP”.
+    
+- **PPP Authentication:** Configure CHAP between R2 and R3:
+    
+    ```
+    R2(config)#username R3 password cisco123
+    R2(config-if)#ppp chap hostname R2
+    R2(config-if)#ppp chap password cisco123
+    R3(config)#username R2 password cisco123
+    R3(config-if)#ppp chap hostname R3
+    R3(config-if)#ppp chap password cisco123
+    ```
+    
+    Now bring up the link. It will perform CHAP (challenge handshake) before allowing routing. Use `show ppp all` or `debug ppp authentication` to verify.
+    
+- **Verify Connectivity:** Regardless of HDLC vs PPP, the routers should still ping each other’s IP. Confirm with `show ip route` and interface status.
+    
+- **Troubleshooting Missions:**
+    
+    - Enter wrong CHAP password on one side and observe authentication failure (LCP stays down). Fix by correcting the password.
+        
+    - Try `encapsulation hdlc` and watch for HDLC default.
+        
+
+**Review:** Understand that HDLC is Cisco-proprietary by default, while PPP is interoperable and supports authentication. Save “Phase11.pkt”.
+
