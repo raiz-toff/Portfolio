@@ -7,7 +7,7 @@ export const identity = {
   location: "Toronto, Canada",
   origin: "Kathmandu, Nepal",
   timeZone: "America/Toronto",
-  status: "open to network roles",
+  status: "open for roles",
   email: "me@rajkumarneupane.com",
   // base64 — kept out of plaintext to deter trivial scraping; decoded client-side.
   phoneB64: "KzE0Mzc2NjUzMzkw",
@@ -17,7 +17,9 @@ export const identity = {
     "Network engineer. Labs every day.",
     "CCNA · CCST certified.",
     "300+ labs to muscle memory.",
-    "est. Kathmandu → Toronto.",
+    "It's always DNS.",
+    "Broke it, fixed it, wrote it down.",
+    "Rides bikes. Fixes them too.",
   ],
   // Short teaser for the homepage panel. The full narrative lives at /story.
   aboutTeaser:

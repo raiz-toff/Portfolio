@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import ColdAisle from "@/components/cover/cold-aisle";
 import CrossoverRack from "@/components/cover/crossover-rack";
 import DcFloor from "@/components/cover/dc-floor";
@@ -27,9 +28,13 @@ function Candidate({
 }) {
   return (
     <section className="screen-line-top screen-line-bottom border-x border-line">
-      <header className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line px-4 py-2.5">
-        <h2 className="font-mono text-sm text-foreground">{id}</h2>
-        <p className="font-mono text-xs text-muted-foreground">{file}</p>
+      <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-b border-line px-4 py-2.5">
+        <h2 className="text-base font-medium tracking-tight text-foreground">
+          {id}
+        </h2>
+        <p className="rounded-full border border-line bg-muted/40 px-2.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+          {file}
+        </p>
       </header>
       {/* stage: same slot the profile-header figure uses (p-4, full column width) */}
       <div className="p-4">{children}</div>
@@ -49,12 +54,12 @@ export default function CoverLab() {
     <div className="relative isolate flex-1">
       <header className="sticky top-0 z-50 max-w-screen overflow-x-clip bg-background px-2">
         <div className="screen-line-top screen-line-bottom mx-auto flex h-(--header-height) items-center justify-between border-x border-line px-4 md:max-w-3xl">
-          <a
+          <Link
             href="/"
             className="font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
             ← back to front page
-          </a>
+          </Link>
           <div className="flex items-center gap-3">
             <span className="font-mono text-sm font-medium tracking-tight">
               COVER LAB
@@ -93,7 +98,7 @@ export default function CoverLab() {
           <Candidate
             id="CANDIDATE B — the patch panel"
             file="cover/patch-panel.tsx"
-            note="24-port panel, 8 cables in real t568b color/stripe order, cables fade in staggered, three link leds blink out of sync. no client js."
+            note="24-port panel, 8 cables in real t568b color/stripe order, cables fade in staggered, three link leds blink out of sync. dashed rails, an unbuilt 1u and a future run echo the bench scene's wireframe language. no client js."
           >
             <PatchPanel />
           </Candidate>
@@ -103,7 +108,7 @@ export default function CoverLab() {
           <Candidate
             id="CANDIDATE C — the cross-connect"
             file="cover/dual-patch-panel.tsx"
-            note="copy of candidate b, split into two: 568a left (cables exit above, sweep left), 568b right (cables exit below, sweep right), joined by a dark fiber trunk across the gap. no client js."
+            note="copy of candidate b, split into two: 568a left (cables exit above, sweep left), 568b right (cables exit below, sweep right), joined by a dark fiber trunk across the gap. dashed rails + an unbuilt 1u per rack in the background. no client js."
           >
             <DualPatchPanel />
           </Candidate>
@@ -113,7 +118,7 @@ export default function CoverLab() {
           <Candidate
             id="CANDIDATE D — the crossover"
             file="cover/crossover-rack.tsx"
-            note="568a upper-left (exits up, sweeps left), 568b lower-right (exits down, sweeps right), joined by a dark fiber run with a service loop, plus a 1u switch uplinked into panel b. staged reveal via smil, no client js."
+            note="568a upper-left (exits up, sweeps left), 568b lower-right (exits down, sweeps right), joined by a dark fiber run with a service loop, plus a 1u switch uplinked into panel b. dashed rail stubs + off-canvas continuations in the background. staged reveal via smil, no client js."
           >
             <CrossoverRack />
           </Candidate>
@@ -133,7 +138,7 @@ export default function CoverLab() {
           <Candidate
             id="CANDIDATE F — the floor, walkable"
             file="cover/dc-floor.tsx"
-            note="isometric floor plan from above: four rack rows, hot/cold aisles, three crac units. move the marker with arrow keys / wasd or by tapping a tile — bfs pathfinding around racks, nearby racks reveal their labels, hud reports the zone. needs client js — stateful (pathfinding + walk queue + depth-sorted z-order)."
+            note="isometric floor plan from above: four rack rows, hot/cold aisles, three crac units. waddle the resident tux with arrow keys / wasd or by tapping a tile — bfs pathfinding around racks, footstep audio per hop, nearby racks reveal their labels, hud reports the zone. dashed lattice, conduits and an unbuilt pad share the bench scene's wireframe language. needs client js — stateful (pathfinding + walk queue + depth-sorted z-order)."
           >
             <DcFloor />
           </Candidate>
@@ -143,7 +148,7 @@ export default function CoverLab() {
           <Candidate
             id="CANDIDATE G — the whole story"
             file="cover/story-cover.tsx"
-            note="candidates a–f merged into one interactive cover: five chapters that zoom from the facility floor down to eight conductors, then pull back to the bench. hotspot chips on the artwork, chapter rail below, escape zooms out, smil reveals replay per visit. every candidate's interactivity preserved — walking, parallax, staged reveals."
+            note="candidates a–f merged into one honest story: five hops from an imagined facility down to eight conductors, pulling back to the bench that actually runs it. traceroute-style hop rail with chapter plate, hotspot chips land staggered after each camera move, escape zooms out, smil reveals replay per visit. every candidate's interactivity preserved — walking, parallax, staged reveals."
           >
             <StoryCover />
           </Candidate>

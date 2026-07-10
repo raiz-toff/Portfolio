@@ -250,31 +250,35 @@
 
 /* ── story cover: chapter transitions (cover lab, candidate g) ──
    "in" = camera pushes deeper (old view swells past the lens, new view grows
-   from behind); "out" = camera pulls back (mirrored). Falls back to plain
-   crossfades under prefers-reduced-motion. */
+   from behind); "out" = camera pulls back (mirrored). Views blur slightly at
+   the far end of the move — a depth-of-field cue — and the UI chrome
+   (.story-chip) detaches during flight, landing staggered once the scene
+   settles. Falls back to plain crossfades under prefers-reduced-motion. */
 .story-enter-in {
-  animation: story-enter-in 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: story-enter-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .story-enter-out {
-  animation: story-enter-out 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: story-enter-out 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .story-exit-in {
-  animation: story-exit-in 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: story-exit-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .story-exit-out {
-  animation: story-exit-out 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: story-exit-out 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @keyframes story-enter-in {
-  from { opacity: 0; transform: scale(0.9); }
+  from { opacity: 0; transform: scale(0.88); filter: blur(3px); }
+  to { filter: blur(0); }
 }
 @keyframes story-enter-out {
-  from { opacity: 0; transform: scale(1.1); }
+  from { opacity: 0; transform: scale(1.12); filter: blur(3px); }
+  to { filter: blur(0); }
 }
 @keyframes story-exit-in {
-  to { opacity: 0; transform: scale(1.1); }
+  to { opacity: 0; transform: scale(1.12); filter: blur(3px); }
 }
 @keyframes story-exit-out {
-  to { opacity: 0; transform: scale(0.9); }
+  to { opacity: 0; transform: scale(0.88); filter: blur(3px); }
 }
 @keyframes story-fade-in {
   from { opacity: 0; }
@@ -282,6 +286,17 @@
 @keyframes story-fade-out {
   to { opacity: 0; }
 }
+
+/* hotspot chips ride in after the camera move (delay set per chip via
+   --chip-delay so they land one by one, primary affordance last) */
+.story-chip {
+  animation: story-chip-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--chip-delay, 460ms);
+}
+@keyframes story-chip-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .story-enter-in,
   .story-enter-out {
@@ -290,6 +305,9 @@
   .story-exit-in,
   .story-exit-out {
     animation-name: story-fade-out;
+  }
+  .story-chip {
+    animation: none;
   }
 }
 

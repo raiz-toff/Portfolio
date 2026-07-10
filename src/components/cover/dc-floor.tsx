@@ -12,6 +12,8 @@
 
 import { useEffect, useRef } from "react";
 
+import { useStepSound } from "@/hooks/use-step-sound";
+
 // ── deterministic PRNG for the LED brightness jitter (see cold-aisle.tsx
 // for why this can't be Math.random() at render time) ────────────────────
 function mulberry32(seed: number) {
@@ -44,29 +46,65 @@ function walkable(x: number, y: number) {
   return x >= 0 && x < COLS && y >= 0 && y < ROWS && !SOLID[y][x];
 }
 
-// ── floor tiles + cold-aisle grates ───────────────────────────────────────
-const TILES = (() => {
-  const out: {
-    gx: number;
-    gy: number;
-    points: string;
-    grate: { x1: number; y1: number; x2: number; y2: number }[];
-  }[] = [];
-  for (let gy = 0; gy < ROWS; gy++) {
-    for (let gx = 0; gx < COLS; gx++) {
-      const [sx, sy] = project(gx, gy);
-      const points = `${sx},${sy - 10} ${sx + 20},${sy} ${sx},${sy + 10} ${sx - 20},${sy}`;
-      const grate =
-        gy === 4 && !SOLID[gy][gx]
-          ? [
-              { x1: sx - 10, y1: sy - 3, x2: sx + 6, y2: sy + 5 },
-              { x1: sx - 4, y1: sy - 6, x2: sx + 12, y2: sy + 2 },
-            ]
-          : [];
-      out.push({ gx, gy, points, grate });
-    }
+// ── floor lattice + cold-aisle grates ─────────────────────────────────────
+// The grid is drawn as long dashed lattice lines (one per row/column edge)
+// rather than per-tile diamonds — dashes stay continuous across the floor,
+// matching the bench scene's dashed-wireframe language.
+type Seg = { x1: number; y1: number; x2: number; y2: number };
+
+function seg(a: [number, number], b: [number, number]): Seg {
+  return { x1: a[0], y1: a[1], x2: b[0], y2: b[1] };
+}
+
+const GRID_LINES: Seg[] = (() => {
+  const out: Seg[] = [];
+  for (let k = 0; k <= COLS; k++) {
+    out.push(seg(project(k - 0.5, -0.5), project(k - 0.5, ROWS - 0.5)));
+  }
+  for (let m = 0; m <= ROWS; m++) {
+    out.push(seg(project(-0.5, m - 0.5), project(COLS - 0.5, m - 0.5)));
   }
   return out;
+})();
+
+const GRATES: Seg[] = (() => {
+  const out: Seg[] = [];
+  for (let gx = 0; gx < COLS; gx++) {
+    if (SOLID[4][gx]) continue;
+    const [sx, sy] = project(gx, 4);
+    out.push({ x1: sx - 10, y1: sy - 3, x2: sx + 6, y2: sy + 5 });
+    out.push({ x1: sx - 4, y1: sy - 6, x2: sx + 12, y2: sy + 2 });
+  }
+  return out;
+})();
+
+// ── conduits + an unbuilt pad: the same dashed traces and wireframe boxes
+// the bench scene uses, running off-canvas along the iso axes ─────────────
+const CONDUITS = [
+  // west corner, jogging down-left then off the left edge
+  "M 100 150 L 40 180 L -24 148",
+  // south corner, straight off the bottom-right
+  "M 360 280 L 456 328",
+  // north corner, up-right then off the top
+  "M 280 60 L 360 20 L 300 -10",
+];
+
+// Dashed wireframe cuboid on the floor lattice — an unbuilt expansion pad,
+// same language as the bench scene's unbuilt zones.
+const WIRE_PAD = (() => {
+  const gx = 1, gy = 11, w = 3, d = 2, h = 26;
+  const base: [number, number][] = [
+    project(gx, gy),
+    project(gx + w, gy),
+    project(gx + w, gy + d),
+    project(gx, gy + d),
+  ];
+  const top = base.map(([x, y]) => [x, y - h] as [number, number]);
+  return {
+    base: base.map((p) => p.join(",")).join(" "),
+    top: top.map((p) => p.join(",")).join(" "),
+    posts: base.map((p, i) => seg(p, top[i])),
+  };
 })();
 
 const AISLE_LABELS = [2, 4, 6].map((row, i) => {
@@ -156,7 +194,8 @@ function buildBox(
 const ROW_LETTER: Record<number, string> = { 1: "a", 3: "b", 5: "c", 7: "d" };
 const DEFAULT_STROKE = "var(--hw-stroke)";
 
-// racks first (matches original document order — see reorder() below), then CRACs
+// built racks-first then CRACs; the world layer renders them sorted by
+// depth-sum so document order IS painter order (see reorder() below)
 const BOXES: BoxData[] = [];
 for (const gy of [1, 3, 5, 7]) {
   for (let gx = 2; gx <= 10; gx++) {
@@ -182,12 +221,10 @@ const BOX_BY_KEY = new Map(BOXES.map((b) => [b.key, b]));
 function Box({
   data,
   polyRefs,
-  labelRefs,
   ledRefs,
 }: {
   data: BoxData;
   polyRefs: React.RefObject<Map<string, SVGPolygonElement[]>>;
-  labelRefs: React.RefObject<Map<string, SVGTextElement>>;
   ledRefs: React.RefObject<Map<number, SVGCircleElement>>;
 }) {
   const stroke = data.accent ?? DEFAULT_STROKE;
@@ -226,18 +263,25 @@ function Box({
 
 export default function DcFloor({
   onNear,
+  hud = true,
   ...props
 }: {
   /** Reports the rack the marker is beside after each move (null in open floor). */
   onNear?: (rack: string | null) => void;
+  /** The zone/controls line under the artwork. The story cover hides it — its chips and captions carry that information. */
+  hud?: boolean;
 } & React.ComponentProps<"div">) {
   const onNearRef = useRef(onNear);
-  onNearRef.current = onNear;
+  useEffect(() => {
+    onNearRef.current = onNear;
+  });
+  const [playStep] = useStepSound();
 
   const svgRef = useRef<SVGSVGElement>(null);
   const worldRef = useRef<SVGGElement>(null);
   const playerRef = useRef<SVGGElement>(null);
-  const ringRef = useRef<SVGCircleElement>(null);
+  const tuxRef = useRef<SVGGElement>(null);
+  const ringRef = useRef<SVGEllipseElement>(null);
   const hudRef = useRef<HTMLSpanElement>(null);
   const polyRefs = useRef<Map<string, SVGPolygonElement[]>>(new Map());
   const labelRefs = useRef<Map<string, SVGTextElement>>(new Map());
@@ -247,12 +291,12 @@ export default function DcFloor({
     const svg = svgRef.current;
     const world = worldRef.current;
     const player = playerRef.current;
+    const tux = tuxRef.current;
     const ring = ringRef.current;
-    const hud = hudRef.current;
-    if (!svg || !world || !player || !ring || !hud) return;
+    if (!svg || !world || !player || !tux || !ring) return;
 
     // entrance stagger, matches the original's setTimeout-per-box reveal
-    const enterTimers = BOXES.map((b, i) =>
+    const enterTimers = BOXES.map((b) =>
       window.setTimeout(() => {
         const polys = polyRefs.current.get(b.key);
         const g = polys?.[0]?.parentElement as SVGGElement | undefined;
@@ -260,12 +304,21 @@ export default function DcFloor({
       }, 200 + b.sum * 45)
     );
 
-    let pg: [number, number] = [6, 4];
+    // Spawn on the south walkway beside pve-01: every box that could draw
+    // over this tile sits at a lower depth-sum, so the penguin is fully
+    // visible the moment the floor loads — and it starts the story at home.
+    let pg: [number, number] = [10, 8];
 
-    function reorder(sum: number) {
+    // Painter's order for the penguin. Children are sum-sorted, so a single
+    // insertion point works: boxes with data-sum ≤ threshold draw behind the
+    // player, the rest in front. Callers pass tileSum + 1 — the sprite wins
+    // ties against racks merely BESIDE it on the seam (their corners would
+    // otherwise clip its shoulders), and only a rack directly in front of it
+    // in its own column (sum + 2, the true "behind the tower" case) occludes.
+    function reorder(threshold: number) {
       let ref: Element | null = null;
       for (const k of Array.from(world!.children)) {
-        if (k !== player && Number(k.getAttribute("data-sum")) > sum) {
+        if (k !== player && Number(k.getAttribute("data-sum")) > threshold) {
           ref = k;
           break;
         }
@@ -279,7 +332,7 @@ export default function DcFloor({
 
     let cur = project(pg[0], pg[1]);
     placePlayer(cur[0], cur[1]);
-    reorder(pg[0] + pg[1]);
+    reorder(pg[0] + pg[1] + 1);
 
     let ringR = 6;
     let ringO = 0.8;
@@ -290,7 +343,8 @@ export default function DcFloor({
         ringR = 6;
         ringO = 0.8;
       }
-      ring!.setAttribute("r", String(ringR));
+      ring!.setAttribute("rx", String(ringR));
+      ring!.setAttribute("ry", String(ringR / 2));
       ring!.setAttribute("opacity", String(Math.max(ringO, 0)));
     }, 50);
 
@@ -348,7 +402,9 @@ export default function DcFloor({
           }
         }
       });
-      hud!.textContent = zone + (near ? ` — beside ${near}` : "");
+      if (hudRef.current) {
+        hudRef.current.textContent = zone + (near ? ` — beside ${near}` : "");
+      }
       onNearRef.current?.(near || null);
     }
     updateHud();
@@ -356,22 +412,39 @@ export default function DcFloor({
     let queue: [number, number][] = [];
     let walking = false;
     let walkRaf = 0;
+    // waddle state: tilt alternates per tile (matching the alternating
+    // footstep pitch), and the penguin faces the way it's moving
+    let facing = 1;
+    let stepParity = 0;
 
     function step() {
       if (!queue.length) {
         walking = false;
+        tux!.setAttribute("transform", `scale(${facing} 1)`);
         updateHud();
         return;
       }
       walking = true;
       const nxt = queue.shift()!;
+      playStep();
+      stepParity ^= 1;
+      const tilt = stepParity ? 7 : -7;
       const from = cur.slice() as [number, number];
       const to = project(nxt[0], nxt[1]);
-      reorder(nxt[0] + nxt[1]);
+      if (to[0] !== from[0]) facing = to[0] > from[0] ? 1 : -1;
+      // mid-step the sprite spans both tiles; order by the more visible one
+      // so it never dips behind a rack a frame early
+      reorder(Math.max(pg[0] + pg[1], nxt[0] + nxt[1]) + 1);
       const t0 = performance.now();
       function anim(t: number) {
         const u = Math.min((t - t0) / 140, 1);
         placePlayer(from[0] + (to[0] - from[0]) * u, from[1] + (to[1] - from[1]) * u);
+        // one waddle cycle per tile: rock to this step's side + a small hop
+        const sw = Math.sin(u * Math.PI);
+        tux!.setAttribute(
+          "transform",
+          `scale(${facing} 1) translate(0 ${(-sw * 1.3).toFixed(2)}) rotate(${(sw * tilt).toFixed(2)})`
+        );
         if (u < 1) {
           walkRaf = requestAnimationFrame(anim);
         } else {
@@ -491,7 +564,7 @@ export default function DcFloor({
       svg.removeEventListener("click", onClick);
       window.removeEventListener("keydown", onKeydown);
     };
-  }, []);
+  }, [playStep]);
 
   return (
     <div {...props}>
@@ -500,32 +573,61 @@ export default function DcFloor({
         viewBox="0 0 640 320"
         className="block w-full cursor-pointer touch-manipulation"
         role="img"
-        aria-label="An isometric data center floor plan viewed from above, with four rack rows, hot and cold aisles, and CRAC units. A marker can be moved with arrow keys, WASD, or by clicking a tile; it paths around racks, and nearby racks reveal their labels."
+        aria-label="An isometric data center floor plan viewed from above, with four rack rows, hot and cold aisles, and CRAC units. A small penguin can be walked with arrow keys, WASD, or by clicking a tile; it waddles around racks, and nearby racks reveal their labels."
       >
         <g>
-          {TILES.map((t) => (
-            <g key={`${t.gx},${t.gy}`}>
-              <polygon points={t.points} fill="none" stroke="var(--hw-stroke-soft)" strokeWidth={1} />
-              {t.grate.map((g, i) => (
-                <line key={i} x1={g.x1} y1={g.y1} x2={g.x2} y2={g.y2} stroke="var(--hw-stroke-soft)" strokeWidth={1} />
-              ))}
-            </g>
+          {GRID_LINES.map((l, i) => (
+            <line key={`gl${i}`} {...l} stroke="var(--hw-stroke-soft)" strokeWidth={1} strokeDasharray="3 3" />
+          ))}
+          {GRATES.map((l, i) => (
+            <line key={`gr${i}`} {...l} stroke="var(--hw-stroke-soft)" strokeWidth={1} />
+          ))}
+        </g>
+
+        {/* background story: dashed conduits running off-canvas + an unbuilt
+            expansion pad — the bench scene's wireframe language, up here on
+            the floor so the first chapter and the last one rhyme */}
+        <g fill="none" stroke="var(--border)">
+          {CONDUITS.map((d, i) => (
+            <path key={`cd${i}`} d={d} strokeDasharray="4 4" />
+          ))}
+          <polygon points={WIRE_PAD.base} strokeDasharray="3 3" />
+          <polygon points={WIRE_PAD.top} strokeDasharray="3 3" />
+          {WIRE_PAD.posts.map((l, i) => (
+            <line key={`wp${i}`} {...l} strokeDasharray="3 3" />
           ))}
         </g>
 
         <g ref={worldRef}>
-          {BOXES.map((b) => (
-            <Box key={b.key} data={b} polyRefs={polyRefs} labelRefs={labelRefs} ledRefs={ledRefs} />
-          ))}
+          {[...BOXES]
+            .sort((a, b) => a.sum - b.sum)
+            .map((b) => (
+              <Box key={b.key} data={b} polyRefs={polyRefs} ledRefs={ledRefs} />
+            ))}
           <g ref={playerRef} id="dc-player">
-            <circle ref={ringRef} cx={0} cy={0} r={6} fill="none" stroke="var(--led-green)" strokeWidth={1} opacity={0} />
-            <polygon points="0,-5 9,0 0,5 -9,0" fill="var(--led-green)" stroke="var(--hw-well)" strokeWidth={1} />
+            {/* position ripple, projected onto the floor plane */}
+            <ellipse ref={ringRef} cx={0} cy={0} rx={6} ry={3} fill="none" stroke="var(--led-green)" strokeWidth={1} opacity={0} />
+            {/* the resident tux — theme-aware (foreground body, background
+                belly, amber beak/feet); the walk loop drives its waddle */}
+            <g ref={tuxRef}>
+              <ellipse cx={0} cy={0.3} rx={4.6} ry={1.6} fill="var(--hw-well)" opacity={0.3} />
+              <ellipse cx={-2} cy={-0.3} rx={1.8} ry={1} fill="var(--led-amber)" />
+              <ellipse cx={2} cy={-0.3} rx={1.8} ry={1} fill="var(--led-amber)" />
+              <ellipse cx={0} cy={-7} rx={4.9} ry={6.4} fill="var(--foreground)" />
+              <ellipse cx={-4.7} cy={-6.4} rx={1.2} ry={3.1} transform="rotate(12 -4.7 -6.4)" fill="var(--foreground)" />
+              <ellipse cx={4.7} cy={-6.4} rx={1.2} ry={3.1} transform="rotate(-12 4.7 -6.4)" fill="var(--foreground)" />
+              <ellipse cx={0} cy={-5.4} rx={3.1} ry={4.4} fill="var(--background)" />
+              <circle cx={0} cy={-14} r={3.6} fill="var(--foreground)" />
+              <circle cx={-1.3} cy={-14.6} r={0.85} fill="var(--background)" />
+              <circle cx={1.3} cy={-14.6} r={0.85} fill="var(--background)" />
+              <polygon points="-1.5,-13.2 1.5,-13.2 0,-11.6" fill="var(--led-amber)" />
+            </g>
           </g>
         </g>
 
         <g>
           {AISLE_LABELS.map((a, i) => (
-            <text key={i} x={a.x} y={a.y} fontSize={11} fill="var(--hw-label-dim)">
+            <text key={i} x={a.x} y={a.y} className="font-mono" fontSize={10} fill="var(--hw-label-dim)">
               {a.label}
             </text>
           ))}
@@ -536,7 +638,7 @@ export default function DcFloor({
                 y={b.labelY - 10}
                 width={b.labelW}
                 height={13}
-                rx={2}
+                rx={6.5}
                 fill="var(--muted)"
                 fillOpacity={0.85}
                 stroke="var(--border)"
@@ -549,7 +651,8 @@ export default function DcFloor({
                 x={b.labelX}
                 y={b.labelY}
                 textAnchor="middle"
-                fontSize={11}
+                className="font-mono"
+                fontSize={10}
                 fill={b.accent ?? "var(--hw-label)"}
               >
                 {b.name}
@@ -559,12 +662,14 @@ export default function DcFloor({
         </g>
       </svg>
 
-      <div className="flex items-center justify-between px-1 pt-1 font-mono text-xs">
-        <span ref={hudRef} className="text-muted-foreground">
-          cold aisle — beside r-b06
-        </span>
-        <span className="text-muted-foreground/40">tap a tile or use arrows / wasd</span>
-      </div>
+      {hud && (
+        <div className="flex items-center justify-between px-1 pt-1 font-mono text-xs">
+          <span ref={hudRef} className="text-muted-foreground">
+            perimeter — beside pve-01 // home.lab
+          </span>
+          <span className="text-muted-foreground/40">tap a tile or use arrows / wasd</span>
+        </div>
+      )}
     </div>
   );
 }

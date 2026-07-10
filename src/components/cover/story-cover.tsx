@@ -1,26 +1,30 @@
 "use client";
 
 // Candidate G — "the whole story".
-// All six candidates merged into one interactive cover: five chapters that
-// zoom from a data-center floor down to eight copper conductors, then pull
-// back for the reveal — none of it is a facility; it's one hypervisor on a
-// bench in Toronto.
+// All six candidates merged into one interactive cover, told honestly: the
+// facility is a daydream, and the story says so from the first caption. Five
+// chapters zoom from the imagined floor down to eight copper conductors,
+// then pull back for the truth — none of it is a facility; it's one
+// hypervisor on a bench in Toronto.
 //
 //   01 the floor      (dc-floor: walk it, bfs pathfinding, hud)
 //   02 the cold aisle (cold-aisle: pointer parallax, drifting when idle)
 //   03 the rack       (crossover-rack: smil staged reveal, replays per visit)
 //   04 layer 1        (patch-panel ⇄ dual-patch-panel: near end / far end)
-//   05 the bench      (iso-lab: the punchline)
+//   05 the bench      (iso-lab: the truth)
 //
-// Navigation: hotspot chips on the artwork, a chapter rail, and Escape to
-// zoom back out. Transitions speak "camera": going deeper, the old view
-// swells past the lens while the new one grows in from behind; going back
-// out, the reverse. Each scene remounts on entry (keyed), and its SMIL
-// timeline is rewound via setCurrentTime(0) so staged reveals replay.
+// Navigation: hotspot chips on the artwork, a traceroute-style hop rail, and
+// Escape to zoom back out. Transitions speak "camera": going deeper, the old
+// view swells past the lens while the new one grows in from behind; going
+// back out, the reverse. The chrome is choreographed around the move — chips
+// detach during flight and land, staggered, once the scene settles. Each
+// scene remounts on entry (keyed), and its SMIL timeline is rewound via
+// setCurrentTime(0) so staged reveals replay.
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 
+import { useClickSound } from "@/hooks/use-click-sound";
 import ColdAisle from "./cold-aisle";
 import CrossoverRack from "./crossover-rack";
 import DcFloor from "./dc-floor";
@@ -41,7 +45,7 @@ const DEPTH: Record<SceneId, number> = {
   bench: 4,
 };
 
-// Where Escape (and the ↩ chip) takes you.
+// Where Escape (and the ← chip) takes you.
 const PARENT: Record<SceneId, SceneId | null> = {
   floor: null,
   aisle: "floor",
@@ -53,36 +57,64 @@ const PARENT: Record<SceneId, SceneId | null> = {
 
 const BACK_LABEL: Record<SceneId, string> = {
   floor: "",
-  aisle: "↩ the floor",
-  rack: "↩ the aisle",
-  panel: "↩ the rack",
-  farend: "↩ the near end",
-  bench: "↩ the rack",
+  aisle: "← the floor",
+  rack: "← the aisle",
+  panel: "← the rack",
+  farend: "← the near end",
+  bench: "← the rack",
 };
 
-const FIG: Record<SceneId, string> = {
-  floor: "FIG_010 — THE FLOOR",
-  aisle: "FIG_011 — THE COLD AISLE",
-  rack: "FIG_012 — THE RACK",
-  panel: "FIG_013 — LAYER 1",
-  farend: "FIG_013B — THE FAR END",
-  bench: "FIG_014 — THE BENCH",
+// One plate of metadata per scene: figure code, chapter number, title, and
+// the honest caption. The farend is chapter 04's b-side, not its own hop.
+const SCENES: Record<
+  SceneId,
+  { fig: string; num: string; title: string; caption: string }
+> = {
+  floor: {
+    fig: "FIG_010",
+    num: "01",
+    title: "the floor",
+    caption:
+      "every homelab starts as a daydream of a facility — cold air down the middle, heat off the backs, crac units holding the north wall. none of it is real. waddle around anyway: arrows, wasd, or tap a tile.",
+  },
+  aisle: {
+    fig: "FIG_011",
+    num: "02",
+    title: "the cold aisle",
+    caption:
+      "inside the daydream it gains detail: supply air in your face, forty racks breathing link-light. still imaginary — but the physics is right.",
+  },
+  rack: {
+    fig: "FIG_012",
+    num: "03",
+    title: "the rack",
+    caption:
+      "open one and the dream turns technical: t568a up top, t568b below, one dark fiber between them — and a switch that knows the way out.",
+  },
+  panel: {
+    fig: "FIG_013",
+    num: "04",
+    title: "layer 1",
+    caption:
+      "the bottom of the stack: eight conductors in t568b order, orange-white on pin 1. everything above this line is an abstraction.",
+  },
+  farend: {
+    fig: "FIG_013B",
+    num: "04",
+    title: "the far end",
+    caption:
+      "the same run, other end: a-standard here, b-standard there. swap the orange and green pairs by hand — that's a crossover.",
+  },
+  bench: {
+    fig: "FIG_014",
+    num: "05",
+    title: "the bench",
+    caption:
+      "and the truth: there is no facility. there's a bench in toronto — pve-01 running eve-ng, cml and gitlab — one hypervisor carrying the whole dream.",
+  },
 };
 
-const CAPTION: Record<SceneId, string> = {
-  floor:
-    "a facility, from above. cold air down the middle, heat off the backs, three crac units on the north wall. walk to a rack — or step straight in.",
-  aisle:
-    "standing in the cold aisle. supply air in your face, forty-odd racks breathing link-light. pick one and open it.",
-  rack: "inside: t568a up top, t568b below, one dark fiber between them — and a switch that knows the way out. trace the copper, or follow the uplink.",
-  panel:
-    "layer 1. eight conductors in t568b order, orange-white on pin 1. everything above this line is an abstraction.",
-  farend:
-    "the far end of the same run: a-standard here, b-standard there. swap the orange and green pairs by hand — that's a crossover.",
-  bench:
-    "and the reveal: there is no facility. it's a bench in the corner of a room in toronto — pve-01, eve-ng, cml — one hypervisor running the whole dream.",
-};
-
+// The five hops of the rail (farend folds into hop 04).
 const CHAPTERS: { scene: SceneId; num: string; label: string }[] = [
   { scene: "floor", num: "01", label: "floor" },
   { scene: "aisle", num: "02", label: "aisle" },
@@ -96,16 +128,28 @@ function Chip({
   onClick,
   href,
   pulse,
+  order = 0,
   children,
 }: {
   pos: React.CSSProperties;
   onClick?: () => void;
   href?: string;
+  /** Primary affordance: green LED + stronger border — "continue the story". */
   pulse?: boolean;
+  /** Entrance order; chips land staggered after the camera settles. */
+  order?: number;
   children: React.ReactNode;
 }) {
-  const className =
-    "pointer-events-auto absolute z-30 flex cursor-pointer select-none items-center gap-1.5 rounded-md border bg-background/95 px-2 py-1 font-mono text-[11px] text-muted-foreground backdrop-blur-sm transition-colors hover:border-ring hover:text-foreground";
+  const [click] = useClickSound();
+  const className = `story-chip pointer-events-auto absolute z-30 flex cursor-pointer select-none items-center gap-1.5 rounded-full border bg-background/90 px-3 py-1.5 font-mono text-[11px] leading-none shadow-xs backdrop-blur-sm transition-[color,border-color,scale] duration-150 ease-out outline-none hover:border-ring hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring active:scale-[0.96] ${
+    pulse
+      ? "border-ring/60 text-foreground"
+      : "border-line text-muted-foreground"
+  }`;
+  const style = {
+    ...pos,
+    "--chip-delay": `${460 + order * 90}ms`,
+  } as React.CSSProperties;
   const dot = pulse ? (
     <span
       className="size-1.5 shrink-0 animate-pulse rounded-full bg-led-green motion-reduce:animate-none"
@@ -114,17 +158,94 @@ function Chip({
   ) : null;
   if (href) {
     return (
-      <Link href={href} className={className} style={pos}>
+      <Link href={href} onClick={click} className={className} style={style}>
         {dot}
         {children}
       </Link>
     );
   }
   return (
-    <button type="button" onClick={onClick} className={className} style={pos}>
+    <button
+      type="button"
+      onClick={() => {
+        click();
+        onClick?.();
+      }}
+      className={className}
+      style={style}
+    >
       {dot}
       {children}
     </button>
+  );
+}
+
+// The hop rail — chapters drawn like a traceroute: numbered stops joined by
+// hairline segments. Passed hops stay lit, the current hop is a pill with a
+// link LED and its name, hops ahead sit dim until you reach them.
+function HopRail({
+  hero,
+  activeIdx,
+  onGo,
+}: {
+  hero: boolean;
+  activeIdx: number;
+  onGo: (to: SceneId) => void;
+}) {
+  const [click] = useClickSound();
+  return (
+    <nav
+      aria-label="Story chapters"
+      className={
+        hero
+          ? "pointer-events-auto absolute top-[3%] left-1/2 z-30 flex -translate-x-1/2 items-center rounded-full border border-line bg-background/90 px-2 py-1 font-mono text-[10px] shadow-xs backdrop-blur-sm"
+          : "flex items-center font-mono text-[11px]"
+      }
+    >
+      {CHAPTERS.map((ch, i) => {
+        const isActive = i === activeIdx;
+        const visited = i < activeIdx;
+        return (
+          <Fragment key={ch.scene}>
+            {i > 0 && (
+              <span
+                aria-hidden
+                className={`h-px shrink-0 transition-colors duration-300 ${
+                  hero ? "w-2" : "w-3"
+                } ${i <= activeIdx ? "bg-ring" : "bg-border/70"}`}
+              />
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                click();
+                onGo(ch.scene);
+              }}
+              aria-label={`hop ${ch.num} — ${ch.label}`}
+              aria-current={isActive ? "step" : undefined}
+              className={`relative flex items-center rounded-full outline-none transition-[color,border-color,background-color] duration-300 after:absolute after:-inset-1.5 after:content-[''] focus-visible:ring-1 focus-visible:ring-ring ${
+                hero ? "gap-1 px-1.5 py-0.5" : "gap-1.5 px-2 py-1"
+              } ${
+                isActive
+                  ? "border border-ring/60 bg-muted/60 text-foreground"
+                  : visited
+                    ? "border border-transparent text-muted-foreground hover:text-foreground"
+                    : "border border-transparent text-muted-foreground/50 hover:text-foreground"
+              }`}
+            >
+              {isActive && (
+                <span
+                  className="size-1.5 shrink-0 animate-pulse rounded-full bg-led-green motion-reduce:animate-none"
+                  aria-hidden
+                />
+              )}
+              {ch.num}
+              {!hero && isActive && <span>{ch.label}</span>}
+            </button>
+          </Fragment>
+        );
+      })}
+    </nav>
   );
 }
 
@@ -154,9 +275,10 @@ export default function StoryCover({
   variant = "full",
 }: {
   /**
-   * "full": stage + FIG label + caption + chapter rail below (the cover lab).
-   * "hero": artwork only — tighter stage, no prose, a minimal numbers-only
-   * rail overlaid on the art (the homepage figure slot).
+   * "full": stage + chapter plate (fig · hop, title, caption) + hop rail
+   * below (the cover lab). "hero": artwork only — tighter stage, the rail
+   * overlaid up top and a chapter microcaption overlaid bottom-left (the
+   * homepage figure slot).
    */
   variant?: "full" | "hero";
 } = {}) {
@@ -171,7 +293,9 @@ export default function StoryCover({
   const [nearRack, setNearRack] = useState<string | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const curRef = useRef<SceneId>("floor");
-  curRef.current = scene.cur;
+  useEffect(() => {
+    curRef.current = scene.cur;
+  });
 
   const go = useCallback((to: SceneId) => {
     setScene((s) => {
@@ -199,7 +323,7 @@ export default function StoryCover({
       setScene((s) =>
         s.gen === gen ? { ...s, prev: null, prevKey: null } : s
       );
-    }, 560);
+    }, 640);
     return () => window.clearTimeout(t);
   }, [scene.gen, scene.prev]);
 
@@ -259,15 +383,15 @@ export default function StoryCover({
       case "floor":
         return (
           <>
-            <DcFloor onNear={setNearRack} />
+            <DcFloor onNear={setNearRack} hud={false} />
             <Chip
               pos={{ right: "2%", bottom: "13%" }}
               onClick={() => go("aisle")}
               pulse
             >
               {nearRack
-                ? `step in — beside ${nearRack} ▸`
-                : "walk to a rack, or step straight in ▸"}
+                ? `step in beside ${nearRack} →`
+                : "walk to a rack, or step in →"}
             </Chip>
           </>
         );
@@ -279,9 +403,10 @@ export default function StoryCover({
             <Chip
               pos={{ right: "2.5%", top: "46%" }}
               onClick={() => go("rack")}
+              order={1}
               pulse
             >
-              open the rack ▸
+              open the rack →
             </Chip>
           </>
         );
@@ -293,12 +418,17 @@ export default function StoryCover({
             <Chip
               pos={{ left: "54%", top: "74%" }}
               onClick={() => go("panel")}
+              order={1}
               pulse
             >
-              trace layer 1 ▸
+              trace layer 1 →
             </Chip>
-            <Chip pos={{ right: "4%", top: "1%" }} onClick={() => go("bench")}>
-              follow the uplink ▸
+            <Chip
+              pos={{ right: "4%", top: "1%" }}
+              onClick={() => go("bench")}
+              order={2}
+            >
+              follow the uplink →
             </Chip>
           </>
         );
@@ -310,9 +440,10 @@ export default function StoryCover({
             <Chip
               pos={{ left: "2.5%", top: "56%" }}
               onClick={() => go("farend")}
+              order={1}
               pulse
             >
-              see the far end ▸
+              see the far end →
             </Chip>
           </>
         );
@@ -324,9 +455,10 @@ export default function StoryCover({
             <Chip
               pos={{ right: "2.5%", top: "4%" }}
               onClick={() => go("bench")}
+              order={1}
               pulse
             >
-              follow the uplink home ▸
+              follow the uplink home →
             </Chip>
           </>
         );
@@ -336,10 +468,14 @@ export default function StoryCover({
             <IsoLab />
             {back}
             <div className="pointer-events-none absolute bottom-[4%] left-1/2 z-30 flex -translate-x-1/2 gap-2">
-              <Chip pos={{ position: "relative" }} onClick={() => go("floor")}>
+              <Chip
+                pos={{ position: "relative" }}
+                onClick={() => go("floor")}
+                order={1}
+              >
                 ↺ start over
               </Chip>
-              <Chip pos={{ position: "relative" }} href="/about" pulse>
+              <Chip pos={{ position: "relative" }} href="/about" order={2} pulse>
                 the full story →
               </Chip>
             </div>
@@ -348,45 +484,19 @@ export default function StoryCover({
     }
   }
 
+  const meta = SCENES[scene.cur];
   const activeChapter = scene.cur === "farend" ? "panel" : scene.cur;
+  const activeIdx = CHAPTERS.findIndex((c) => c.scene === activeChapter);
   const hero = variant === "hero";
-
-  const rail = (
-    <nav
-      aria-label="Story chapters"
-      className={
-        hero
-          ? "pointer-events-auto absolute top-[2.5%] left-1/2 z-30 flex -translate-x-1/2 items-center rounded-md border bg-background/95 px-1 font-mono text-[11px] backdrop-blur-sm"
-          : "flex shrink-0 items-center gap-1 font-mono text-[11px]"
-      }
-    >
-      {CHAPTERS.map((ch) => (
-        <button
-          key={ch.scene}
-          type="button"
-          onClick={() => go(ch.scene)}
-          aria-label={`chapter ${ch.num} — ${ch.label}`}
-          aria-current={activeChapter === ch.scene ? "step" : undefined}
-          className={`rounded px-1.5 py-1.5 transition-colors ${
-            activeChapter === ch.scene
-              ? "text-foreground"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {ch.num}
-          {!hero && activeChapter === ch.scene && (
-            <span className="ml-1">{ch.label}</span>
-          )}
-        </button>
-      ))}
-    </nav>
-  );
 
   const fit = (id: SceneId) =>
     hero && HERO_FIT[id] ? { width: `${HERO_FIT[id]}%` } : undefined;
 
   return (
-    <div role="group" aria-label="Interactive cover: five chapters from a data center floor down to layer 1, ending at the home lab bench">
+    <div
+      role="group"
+      aria-label="Interactive cover, told in five chapters: an imagined data center floor zooms down to layer 1, then pulls back to the real home-lab bench in Toronto"
+    >
       <div
         ref={stageRef}
         tabIndex={-1}
@@ -424,33 +534,63 @@ export default function StoryCover({
           </div>
         </div>
 
-        {hero && rail}
+        {hero && <HopRail hero activeIdx={activeIdx} onGo={go} />}
+
+        {/* hero: a small chapter plate so the story reads without the prose
+            block. Hidden on the bench — its centered reveal chips own that
+            edge of the frame. */}
+        {hero && scene.cur !== "bench" && (
+          <p
+            key={`hcap-${scene.cur}`}
+            className="flip-item pointer-events-none absolute bottom-[3.5%] left-[2%] z-30 flex items-baseline gap-1.5 rounded-full border border-line bg-background/85 px-2.5 py-1 font-mono text-[10px] leading-none backdrop-blur-sm"
+          >
+            <span className="tracking-[0.12em] text-muted-foreground/60 uppercase">
+              {meta.fig}
+            </span>
+            <span className="text-muted-foreground">{meta.title}</span>
+          </p>
+        )}
       </div>
 
-      {/* full variant: fig label + caption + chapter rail, outside the artwork */}
+      {/* full variant: chapter plate + hop rail, outside the artwork */}
       {!hero && (
-        <div className="mt-3 flex items-start justify-between gap-4 border-t border-line pt-3">
+        <div className="mt-3 flex flex-col gap-4 border-t border-line pt-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
           <div className="min-w-0">
             <p
               key={`fig-${scene.cur}`}
-              className="flip-item font-mono text-[11px] tracking-[0.1em] text-muted-foreground/70"
+              className="flip-item font-mono text-[10px] tracking-[0.15em] text-muted-foreground/60 uppercase"
             >
-              {FIG[scene.cur]}
+              {meta.fig} · ch_{meta.num}/05
+            </p>
+            <p
+              key={`title-${scene.cur}`}
+              className="flip-item mt-1.5 text-lg/none font-medium tracking-tight"
+            >
+              {meta.title}
             </p>
             <p
               key={`cap-${scene.cur}`}
-              className="flip-item mt-1 min-h-[3.75rem] max-w-[54ch] font-mono text-xs leading-relaxed text-muted-foreground"
+              className="flip-item mt-2 min-h-[5.75rem] max-w-[58ch] text-sm leading-relaxed text-muted-foreground"
             >
-              {CAPTION[scene.cur]}
+              {meta.caption}
             </p>
           </div>
-          {rail}
+
+          <div className="flex shrink-0 flex-col gap-2 sm:items-end">
+            <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground/60 uppercase">
+              hop {meta.num} / 05
+            </p>
+            <HopRail hero={false} activeIdx={activeIdx} onGo={go} />
+            <p className="font-mono text-[10px] text-muted-foreground/40">
+              {PARENT[scene.cur] ? "esc — zoom out" : "click a hop to jump"}
+            </p>
+          </div>
         </div>
       )}
 
       {/* announce chapter changes to screen readers */}
       <p aria-live="polite" className="sr-only">
-        {FIG[scene.cur]}
+        {meta.fig} — {meta.title}
       </p>
     </div>
   );

@@ -68,7 +68,7 @@ function PanelArt({ wires, blinkStart }: { wires: Wire[]; blinkStart: number }) 
         y={PANEL_TOP}
         width="592"
         height={PANEL_H}
-        rx="3"
+        rx="4"
         fill="var(--hw-face-3)"
         stroke="var(--hw-stroke)"
       />
@@ -84,7 +84,7 @@ function PanelArt({ wires, blinkStart }: { wires: Wire[]; blinkStart: number }) 
             y={PORT_TOP}
             width={PORT_W}
             height={PORT_H}
-            rx="2"
+            rx="2.5"
             fill="var(--hw-well)"
             stroke="var(--hw-stroke)"
           />
@@ -149,6 +149,19 @@ export default function DualPatchPanel(props: React.ComponentProps<"svg">) {
       aria-label="Two patch panels joined by a dark fiber trunk: a T568A panel on the left with cables exiting above and sweeping left, and a T568B panel on the right with cables exiting below and sweeping right"
       {...props}
     >
+      {/* background: dashed rack rails around each panel + an unbuilt 1U per
+          rack (below the near end, above the far end) — the bench scene's
+          wireframe language. Stroke/dash doubled: this viewBox is ~2× the
+          other scenes, so these values render at the same visual rhythm. */}
+      <g fill="none" strokeWidth="2">
+        <line x1="14" y1="30" x2="14" y2="430" stroke="var(--hw-stroke-soft)" strokeDasharray="6 6" />
+        <line x1="626" y1="30" x2="626" y2="430" stroke="var(--hw-stroke-soft)" strokeDasharray="6 6" />
+        <line x1="674" y1="30" x2="674" y2="430" stroke="var(--hw-stroke-soft)" strokeDasharray="6 6" />
+        <line x1="1286" y1="30" x2="1286" y2="430" stroke="var(--hw-stroke-soft)" strokeDasharray="6 6" />
+        <rect x="24" y="264" width="592" height="44" rx="4" stroke="var(--border)" strokeDasharray="6 6" />
+        <rect x="684" y="152" width="592" height="44" rx="4" stroke="var(--border)" strokeDasharray="6 6" />
+      </g>
+
       {/* 568A, left: vertical flip only — cables exit above, still sweep left */}
       <g transform="translate(0,296) scale(1,-1)">
         <PanelArt wires={WIRES_568A} blinkStart={1.6} />
@@ -178,10 +191,10 @@ export default function DualPatchPanel(props: React.ComponentProps<"svg">) {
         strokeLinecap="round"
       />
 
-      <text x="608" y="246" fontSize="11" fill="var(--hw-label)" textAnchor="end" letterSpacing="1.5">
+      <text x="608" y="246" className="font-mono" fontSize="11" fill="var(--hw-label)" textAnchor="end" letterSpacing="1.5">
         568A
       </text>
-      <text x="1268" y="214" fontSize="11" fill="var(--hw-label)" textAnchor="end" letterSpacing="1.5">
+      <text x="1268" y="214" className="font-mono" fontSize="11" fill="var(--hw-label)" textAnchor="end" letterSpacing="1.5">
         568B
       </text>
     </svg>

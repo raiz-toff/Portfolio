@@ -55,7 +55,7 @@ function Ports({
         const x = x0 + i * 19 + (i >= 6 ? 5 : 0);
         return (
           <g key={i}>
-            <rect x={x} y={y0} width="15" height="22" rx="2" fill="var(--hw-well)" stroke="var(--hw-stroke)" />
+            <rect x={x} y={y0} width="15" height="22" rx="2.5" fill="var(--hw-well)" stroke="var(--hw-stroke)" />
             <rect
               x={x + 4.5}
               y={notchTop ? y0 + 1 : y0 + 18}
@@ -136,26 +136,39 @@ export default function CrossoverRack(props: React.ComponentProps<"svg">) {
       aria-label="Two patch panels joined by a dark fiber with a service loop: a T568A panel upper-left with cables exiting up and left, a T568B panel lower-right with cables exiting down and right, and a 1U switch uplinked into the lower panel"
       {...props}
     >
+      {/* background: dashed rail stubs grounding each panel in an implied
+          rack, plus dashed continuations running off-canvas (the row — and
+          the switch's uplink — carry on beyond the frame). Panel A's right
+          rail is omitted: the dark fiber exits through that spot. */}
+      <g fill="none">
+        <line x1="32" y1="96" x2="32" y2="172" stroke="var(--hw-stroke-soft)" strokeDasharray="3 3" />
+        <line x1="332" y1="216" x2="332" y2="292" stroke="var(--hw-stroke-soft)" strokeDasharray="3 3" />
+        <line x1="608" y1="216" x2="608" y2="292" stroke="var(--hw-stroke-soft)" strokeDasharray="3 3" />
+        <path d="M 32 134 H -8" stroke="var(--border)" strokeDasharray="4 4" />
+        <path d="M 608 254 H 648" stroke="var(--border)" strokeDasharray="4 4" />
+        <path d="M 624 64 H 648" stroke="var(--border)" strokeDasharray="4 4" />
+      </g>
+
       <CableBand cables={BAND_A} baseDelay={0.3} />
 
       {/* panel A — 568A */}
-      <rect x="40" y="112" width="260" height="44" rx="3" fill="var(--hw-face-3)" stroke="var(--hw-stroke)" />
+      <rect x="40" y="112" width="260" height="44" rx="4" fill="var(--hw-face-3)" stroke="var(--hw-stroke)" />
       <circle cx="48" cy="122" r="2.5" fill="var(--hw-well)" stroke="var(--hw-stroke-strong)" />
       <circle cx="48" cy="146" r="2.5" fill="var(--hw-well)" stroke="var(--hw-stroke-strong)" />
       <circle cx="293" cy="122" r="2.5" fill="var(--hw-well)" stroke="var(--hw-stroke-strong)" />
       <circle cx="293" cy="146" r="2.5" fill="var(--hw-well)" stroke="var(--hw-stroke-strong)" />
-      <text x="42" y="176" fontSize="11" fill="var(--hw-label)" letterSpacing="1.5">
+      <text x="42" y="176" className="font-mono" fontSize="11" fill="var(--hw-label)" letterSpacing="1.5">
         T568A
       </text>
       <Ports x0={60} y0={122} notchTop={true} />
 
       {/* switch — SW-01 */}
-      <rect x="420" y="48" width="196" height="32" rx="3" fill="var(--hw-face-3)" stroke="var(--hw-stroke)" />
+      <rect x="420" y="48" width="196" height="32" rx="4" fill="var(--hw-face-3)" stroke="var(--hw-stroke)" />
       <circle cx="428" cy="56" r="2" fill="var(--hw-well)" stroke="var(--hw-stroke-strong)" />
       <circle cx="428" cy="72" r="2" fill="var(--hw-well)" stroke="var(--hw-stroke-strong)" />
       <circle cx="608" cy="56" r="2" fill="var(--hw-well)" stroke="var(--hw-stroke-strong)" />
       <circle cx="608" cy="72" r="2" fill="var(--hw-well)" stroke="var(--hw-stroke-strong)" />
-      <text x="438" y="69" fontSize="11" fill="var(--hw-label)" letterSpacing="1">
+      <text x="438" y="69" className="font-mono" fontSize="11" fill="var(--hw-label)" letterSpacing="1">
         SW-01
       </text>
       {/* port row starts clear of the "SW-01" label so the text never clips */}
@@ -163,7 +176,7 @@ export default function CrossoverRack(props: React.ComponentProps<"svg">) {
         const x = 482 + i * 15;
         return (
           <g key={i}>
-            <rect x={x} y="60" width="11" height="9" rx="1" fill="var(--hw-well)" stroke="var(--hw-stroke)" />
+            <rect x={x} y="60" width="11" height="9" rx="1.5" fill="var(--hw-well)" stroke="var(--hw-stroke)" />
             <circle cx={x + 5.5} cy="55" r="1.7" fill="var(--led-green)" opacity="0">
               {SWITCH_LIT.has(i) && !SWITCH_BLINKING.has(i) && (
                 <animate attributeName="opacity" from="0" to="1" dur="0.01s" begin="3.6s" fill="freeze" />
@@ -223,18 +236,18 @@ export default function CrossoverRack(props: React.ComponentProps<"svg">) {
       <rect x="340" y="248" width="9" height="12" rx="1.5" fill="var(--hw-label)" opacity="0">
         <animate attributeName="opacity" from="0" to="1" dur="0.01s" begin="2.2s" fill="freeze" />
       </rect>
-      <text x="404" y="184" fontSize="11" fill="var(--hw-label-dim)" fontStyle="italic" opacity="0">
+      <text x="404" y="184" className="font-mono" fontSize="11" fill="var(--hw-label-dim)" fontStyle="italic" opacity="0">
         dark fiber
         <animate attributeName="opacity" from="0" to="1" dur="0.01s" begin="2.2s" fill="freeze" />
       </text>
 
       {/* panel B — 568B */}
-      <rect x="340" y="232" width="260" height="44" rx="3" fill="var(--hw-face-3)" stroke="var(--hw-stroke)" />
+      <rect x="340" y="232" width="260" height="44" rx="4" fill="var(--hw-face-3)" stroke="var(--hw-stroke)" />
       <circle cx="348" cy="242" r="2.5" fill="var(--hw-well)" stroke="var(--hw-stroke-strong)" />
       <circle cx="348" cy="266" r="2.5" fill="var(--hw-well)" stroke="var(--hw-stroke-strong)" />
       <circle cx="593" cy="242" r="2.5" fill="var(--hw-well)" stroke="var(--hw-stroke-strong)" />
       <circle cx="593" cy="266" r="2.5" fill="var(--hw-well)" stroke="var(--hw-stroke-strong)" />
-      <text x="598" y="296" fontSize="11" fill="var(--hw-label)" letterSpacing="1.5" textAnchor="end">
+      <text x="598" y="296" className="font-mono" fontSize="11" fill="var(--hw-label)" letterSpacing="1.5" textAnchor="end">
         T568B
       </text>
       <Ports x0={356} y0={242} notchTop={false} />

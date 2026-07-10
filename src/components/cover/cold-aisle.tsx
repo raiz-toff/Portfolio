@@ -185,10 +185,10 @@ function Rack({
 }) {
   return (
     <>
-      <rect x={data.x} y={data.y} width={data.w} height={data.h} fill={data.fill} stroke={data.stroke} strokeWidth={1} />
+      <rect x={data.x} y={data.y} width={data.w} height={data.h} rx={data.w * 0.015} fill={data.fill} stroke={data.stroke} strokeWidth={1} />
       {data.groups.map((g, gi) => (
         <g key={gi}>
-          <rect x={g.rectX} y={g.rectY} width={g.rectW} height={g.rectH} fill="var(--hw-well)" />
+          <rect x={g.rectX} y={g.rectY} width={g.rectW} height={g.rectH} rx={data.w * 0.02} fill="var(--hw-well)" />
           <line x1={g.seamX1} y1={g.seamY} x2={g.seamX2} y2={g.seamY} stroke="var(--hw-stroke-soft)" strokeWidth={1} />
           {g.leds.map((led) => (
             <circle

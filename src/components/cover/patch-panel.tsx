@@ -53,12 +53,21 @@ export default function PatchPanel(props: React.ComponentProps<"svg">) {
       aria-label="24-port patch panel with eight cables in T568B color order curving off into a parallel band"
       {...props}
     >
+      {/* background: dashed rack rails, an unbuilt 1U above, and a future
+          run sweeping off-canvas — the bench scene's wireframe language */}
+      <g fill="none">
+        <line x1="14" y1="0" x2="14" y2="214" stroke="var(--hw-stroke-soft)" strokeDasharray="3 3" />
+        <line x1="626" y1="0" x2="626" y2="214" stroke="var(--hw-stroke-soft)" strokeDasharray="3 3" />
+        <rect x="24" y="8" width="592" height="28" rx="4" stroke="var(--border)" strokeDasharray="3 3" />
+        <path d="M 550 80 V 124 A 26 26 0 0 0 576 150 H 648" stroke="var(--border)" strokeDasharray="4 4" />
+      </g>
+
       <rect
         x="24"
         y={PANEL_TOP}
         width="592"
         height={PANEL_H}
-        rx="3"
+        rx="4"
         fill="var(--hw-face-3)"
         stroke="var(--hw-stroke)"
       />
@@ -69,6 +78,7 @@ export default function PatchPanel(props: React.ComponentProps<"svg">) {
       <text
         x="596"
         y="82"
+        className="font-mono"
         fontSize="11"
         fill="var(--hw-label)"
         textAnchor="end"
@@ -84,7 +94,7 @@ export default function PatchPanel(props: React.ComponentProps<"svg">) {
             y={PORT_TOP}
             width={PORT_W}
             height={PORT_H}
-            rx="2"
+            rx="2.5"
             fill="var(--hw-well)"
             stroke="var(--hw-stroke)"
           />

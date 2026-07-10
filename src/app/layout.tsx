@@ -40,7 +40,14 @@ export const metadata: Metadata = {
     siteName: "Rajkumar Neupane",
     title: "Rajkumar Neupane — Network Engineer",
     description,
-    images: "/social.png",
+    images: [
+      {
+        url: "/social.png",
+        width: 2848,
+        height: 1504,
+        alt: "RN monogram built from the 8 twisted-pair conductors in T568B order — Rajkumar Neupane, Network Engineer",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -52,9 +59,10 @@ export const metadata: Metadata = {
     types: { "application/rss+xml": "/rss.xml" },
   },
   // app/favicon.ico covers the classic path; these add the sharp variants.
+  // The svg is scheme-aware (its tile swaps dark via an embedded media query).
   icons: {
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
       { url: "/favicon-96x96.png", type: "image/png", sizes: "96x96" },
     ],
     apple: "/apple-touch-icon.png",

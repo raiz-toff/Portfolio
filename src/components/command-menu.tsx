@@ -15,7 +15,12 @@ type Command = {
 function buildCommands(close: () => void): Command[] {
   const go = (hash: string) => () => {
     close();
-    document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" });
+    // On the homepage the section exists — smooth-scroll to it. From any
+    // other route (/about, /blog…) it doesn't, so navigate home with the
+    // hash and let the browser land on the section.
+    const el = document.querySelector(hash);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+    else window.location.assign(`/${hash}`);
   };
   const open = (url: string) => () => {
     close();

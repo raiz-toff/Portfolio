@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { links } from "@/data/profile";
 import CommandMenu from "./command-menu";
 import { GitHubIcon } from "./icons";
@@ -5,12 +6,14 @@ import RNMark from "./rn-mark";
 import SoundLink from "./sound-link";
 import ThemeToggle from "./theme-toggle";
 
+// Path-qualified hashes so the nav works from /about and other routes,
+// not just the homepage.
 const nav = [
-  { href: "#about", label: "About" },
-  { href: "#stack", label: "Stack" },
-  { href: "#experience", label: "Experience" },
-  { href: "#certs", label: "Certs" },
-  { href: "#lab-log", label: "Lab Log" },
+  { href: "/#about", label: "About" },
+  { href: "/#stack", label: "Stack" },
+  { href: "/#experience", label: "Experience" },
+  { href: "/#certs", label: "Certs" },
+  { href: "/#lab-log", label: "Lab Log" },
 ];
 
 function VerticalSeparator({ className = "" }: { className?: string }) {
@@ -21,21 +24,21 @@ export default function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 max-w-screen overflow-x-clip bg-background px-2">
       <div className="screen-line-top screen-line-bottom mx-auto flex h-(--header-height) items-center gap-2 border-r border-line pr-2 sm:gap-4 md:max-w-3xl">
-        <a href="#top" aria-label="Home">
-          <RNMark className="size-10 shrink-0" />
-        </a>
+        <Link href="/" aria-label="Home">
+          <RNMark className="h-9 w-auto shrink-0" />
+        </Link>
 
         <div className="flex-1" />
 
         <nav className="flex items-center gap-4 max-sm:hidden">
           {nav.map((item) => (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className="text-sm font-medium tracking-wide text-muted-foreground transition-[color] hover:text-foreground"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
