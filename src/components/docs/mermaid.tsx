@@ -8,6 +8,7 @@ import { useTheme } from 'next-themes';
 export function Mermaid({ chart }: { chart: string }) {
   const id = useId();
   const [svg, setSvg] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const { resolvedTheme } = useTheme();
 
   useEffect(() => {
@@ -17,7 +18,7 @@ export function Mermaid({ chart }: { chart: string }) {
       const mermaid = (await import('mermaid')).default;
       mermaid.initialize({
         startOnLoad: false,
-        securityLevel: 'loose',
+        securityLevel: 'strict',
         fontFamily: 'inherit',
         theme: resolvedTheme === 'dark' ? 'dark' : 'default',
       });
@@ -27,14 +28,14 @@ export function Mermaid({ chart }: { chart: string }) {
           'mermaid-' + id.replace(/[^a-zA-Z0-9]/g, ''),
           chart,
         );
-        if (!cancelled) setSvg(svg);
+        if (!cancelled) {
+          setError(null);
+          setSvg(svg);
+        }
       } catch (err) {
         if (!cancelled) {
-          setSvg(
-            `<pre class="text-fd-muted-foreground">Failed to render diagram:\n${
-              (err as Error).message
-            }</pre>`,
-          );
+          setSvg('');
+          setError((err as Error).message);
         }
       }
     }
@@ -44,6 +45,15 @@ export function Mermaid({ chart }: { chart: string }) {
       cancelled = true;
     };
   }, [chart, resolvedTheme, id]);
+
+  if (error) {
+    return (
+      <pre className="my-4 overflow-x-auto text-fd-muted-foreground">
+        Failed to render diagram:{'\n'}
+        {error}
+      </pre>
+    );
+  }
 
   return (
     <div

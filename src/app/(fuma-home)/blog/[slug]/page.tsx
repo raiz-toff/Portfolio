@@ -48,7 +48,9 @@ export default async function BlogPostPage(props: {
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-14">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+          }}
         />
         <Link
           href="/blog"

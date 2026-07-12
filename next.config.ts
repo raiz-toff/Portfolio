@@ -7,11 +7,6 @@ const withMDX = createMDX();
 // markdown content negotiation (proxy.ts), and OG generation need a server.
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  images: {
-    // Allow remote images (e.g. badges/diagrams pasted from the web) so
-    // next/image doesn't throw on unconfigured hosts.
-    remotePatterns: [{ protocol: "https", hostname: "**" }],
-  },
 };
 
 export default withMDX(nextConfig);
