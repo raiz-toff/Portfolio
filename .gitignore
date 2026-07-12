@@ -43,3 +43,7 @@ next-env.d.ts
 
 # fumadocs-mdx generated content index
 /.source
+
+# locally installed Claude Code skills
+/.agents
+/skills-lock.json
