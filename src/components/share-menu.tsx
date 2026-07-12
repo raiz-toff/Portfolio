@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useClickSound } from "@/hooks/use-click-sound";
 import {
   EllipsisIcon,
@@ -20,16 +20,18 @@ export type ShareMenuProps = {
 const itemClass =
   "flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground";
 
+const subscribeNever = () => () => {};
+
 export default function ShareMenu({ title, url }: ShareMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [canNativeShare, setCanNativeShare] = useState(false);
+  const canNativeShare = useSyncExternalStore(
+    subscribeNever,
+    () => "share" in navigator,
+    () => false,
+  );
   const rootRef = useRef<HTMLDivElement>(null);
   const [click] = useClickSound();
-
-  useEffect(() => {
-    setCanNativeShare("share" in navigator);
-  }, []);
 
   useEffect(() => {
     if (!isOpen) return;

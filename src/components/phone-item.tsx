@@ -4,17 +4,19 @@
 // decoded only in the browser, so it isn't sitting in plaintext for scrapers
 // to grep out of the page source or bundle.
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import { IconBox } from "./overview-item";
 import { PhoneIcon } from "./icons";
 
-export function PhoneItem({ phoneB64 }: { phoneB64: string }) {
-  const [phone, setPhone] = useState<string | null>(null);
+const subscribeNever = () => () => {};
 
-  useEffect(() => {
-    setPhone(atob(phoneB64));
-  }, [phoneB64]);
+export function PhoneItem({ phoneB64 }: { phoneB64: string }) {
+  const phone = useSyncExternalStore<string | null>(
+    subscribeNever,
+    () => atob(phoneB64),
+    () => null,
+  );
 
   return (
     <div className="flex items-center gap-4 font-mono text-sm">

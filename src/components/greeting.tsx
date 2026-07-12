@@ -5,7 +5,7 @@
 // Client-only: paints a stable placeholder on first render, fills in after
 // mount to avoid a server/client hour mismatch (same pattern as CurrentLocalTime).
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { MoonIcon, SunIcon, SunsetIcon } from "./icons";
 
 function greetingForHour(hour: number) {
@@ -18,16 +18,18 @@ function greetingForHour(hour: number) {
   return { text: "Good evening", Icon: MoonIcon, iconClass: "greeting-icon-moon" };
 }
 
-export function Greeting() {
-  const [{ text, Icon, iconClass }, setGreeting] = useState<{
-    text: string;
-    Icon: typeof SunIcon | null;
-    iconClass: string;
-  }>({ text: "Hey there", Icon: null, iconClass: "" });
+const subscribeNever = () => () => {};
 
-  useEffect(() => {
-    setGreeting(greetingForHour(new Date().getHours()));
-  }, []);
+export function Greeting() {
+  const hour = useSyncExternalStore<number | null>(
+    subscribeNever,
+    () => new Date().getHours(),
+    () => null,
+  );
+  const { text, Icon, iconClass } =
+    hour === null
+      ? { text: "Hey there", Icon: null as typeof SunIcon | null, iconClass: "" }
+      : greetingForHour(hour);
 
   return (
     <span

@@ -126,8 +126,6 @@ export default function CommandMenu() {
     }
   };
 
-  let lastGroup = "";
-
   return (
     <>
       <button
@@ -177,8 +175,7 @@ export default function CommandMenu() {
                 </li>
               )}
               {filtered.map((cmd, i) => {
-                const showGroup = cmd.group !== lastGroup;
-                lastGroup = cmd.group;
+                const showGroup = i === 0 || filtered[i - 1].group !== cmd.group;
                 return (
                   <li key={`${cmd.group}-${cmd.label}`}>
                     {showGroup && (

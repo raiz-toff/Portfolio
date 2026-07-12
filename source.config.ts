@@ -2,6 +2,29 @@ import { defineConfig, defineDocs } from 'fumadocs-mdx/config';
 import { metaSchema, pageSchema } from 'fumadocs-core/source/schema';
 import { z } from 'zod';
 
+// Minimal structural view of the mdast / mdx-jsx nodes these plugins touch.
+type MdxJsxAttribute = {
+  type: string;
+  name: string;
+  value?: unknown;
+};
+
+type Node = {
+  type?: string;
+  lang?: string | null;
+  value?: string;
+  url?: string;
+  name?: string | null;
+  attributes?: MdxJsxAttribute[];
+  children?: Node[];
+};
+
+type EstreeProgram = {
+  type: 'Program';
+  sourceType: 'module';
+  body: unknown[];
+};
+
 // The previous Starlight content contains raw HTML with string `style="..."`
 // attributes. React (MDX) requires `style` to be an object, so convert them at
 // build time. This keeps the source documents authorable in Obsidian as-is.
@@ -22,7 +45,7 @@ function cssStringToObject(css: string) {
   return style;
 }
 
-function objectToEstree(obj: Record<string, string>): any {
+function objectToEstree(obj: Record<string, string>): EstreeProgram {
   return {
     type: 'Program',
     sourceType: 'module',
@@ -51,8 +74,8 @@ function objectToEstree(obj: Record<string, string>): any {
 // Convert fenced ```mermaid code blocks into <Mermaid chart="..." /> so the
 // diagrams render via the client component instead of showing as raw code.
 function remarkMermaid() {
-  const visit = (node: any, parent: any, index: number | null) => {
-    if (node?.type === 'code' && node.lang === 'mermaid' && parent && index !== null) {
+  const visit = (node: Node | null, parent: Node | null, index: number | null) => {
+    if (node?.type === 'code' && node.lang === 'mermaid' && parent?.children && index !== null) {
       parent.children[index] = {
         type: 'mdxJsxFlowElement',
         name: 'Mermaid',
@@ -64,10 +87,10 @@ function remarkMermaid() {
       return;
     }
     if (Array.isArray(node?.children)) {
-      node.children.forEach((child: any, i: number) => visit(child, node, i));
+      node.children.forEach((child, i) => visit(child, node, i));
     }
   };
-  return (tree: any) => visit(tree, null, null);
+  return (tree: Node) => visit(tree, null, null);
 }
 
 // Convert an HTML/SVG attribute name to its React/JSX equivalent:
@@ -106,7 +129,7 @@ function rewriteInternalPath(url: string): string {
 //  - normalize attribute names (class, stroke-width, etc.)
 //  - rewrite internal links to the /docs base (raw <a> and markdown links)
 function remarkFixJsxHtml() {
-  const visit = (node: any) => {
+  const visit = (node: Node | null) => {
     if (!node || typeof node !== 'object') return;
     if (node.type === 'link' && typeof node.url === 'string') {
       node.url = rewriteInternalPath(node.url);
@@ -125,11 +148,11 @@ function remarkFixJsxHtml() {
     }
     if (Array.isArray(node.children)) node.children.forEach(visit);
   };
-  return (tree: any) => visit(tree);
+  return (tree: Node) => visit(tree);
 }
 
 function remarkStyleStringToObject() {
-  const visit = (node: any) => {
+  const visit = (node: Node | null) => {
     if (!node || typeof node !== 'object') return;
     if (
       (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') &&
@@ -148,7 +171,7 @@ function remarkStyleStringToObject() {
     }
     if (Array.isArray(node.children)) node.children.forEach(visit);
   };
-  return (tree: any) => visit(tree);
+  return (tree: Node) => visit(tree);
 }
 
 // Custom frontmatter fields carried over from the previous Starlight site.
