@@ -19,7 +19,7 @@ and update your row when done.
 | 003  | Add a GitHub Actions CI gate | P1 | S | 001, 002 | TODO |
 | 004  | Close the open image proxy + harden HTML-injection sinks | P2 | S | — | DONE |
 | 005  | Fetch GitHub contributions server-side with daily revalidation | P2 | M | — | DONE |
-| 006  | Repo hygiene: dead scripts, stale paths, env/agent contracts | P3 | S | — | TODO |
+| 006  | Repo hygiene: dead scripts, stale paths, env/agent contracts | P3 | S | — | DONE |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
