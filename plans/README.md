@@ -17,7 +17,7 @@ and update your row when done.
 | 001  | Make `npm run lint` exit clean (0 errors) | P1 | M | — | DONE |
 | 002  | Add a Vitest baseline covering the URL/content helpers | P1 | M | 001 | DONE |
 | 003  | Add a GitHub Actions CI gate | P1 | S | 001, 002 | TODO |
-| 004  | Close the open image proxy + harden HTML-injection sinks | P2 | S | — | TODO |
+| 004  | Close the open image proxy + harden HTML-injection sinks | P2 | S | — | DONE |
 | 005  | Fetch GitHub contributions server-side with daily revalidation | P2 | M | — | DONE |
 | 006  | Repo hygiene: dead scripts, stale paths, env/agent contracts | P3 | S | — | TODO |
 
