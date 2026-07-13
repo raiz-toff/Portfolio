@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cn } from "@/lib/cn";
 import { links } from "@/data/profile";
 import CommandMenu from "./command-menu";
 import { GitHubIcon } from "./icons";
@@ -20,7 +21,19 @@ function VerticalSeparator({ className = "" }: { className?: string }) {
   return <span className={`h-5 w-px self-center bg-border ${className}`} aria-hidden />;
 }
 
-export default function SiteHeader() {
+export default function SiteHeader({
+  /**
+   * Set on pages that render <SectionNav />, whose left rail replaces these
+   * links at xl and up. Pages without the rail (e.g. /about) keep them at every
+   * width above sm, so they are never left with no navigation at all.
+   */
+  hasSectionNav = false,
+}: {
+  hasSectionNav?: boolean;
+}) {
+  // Both the links and the divider that sets them off go together.
+  const railReplaces = hasSectionNav && "xl:hidden";
+
   return (
     <header className="sticky top-0 z-50 max-w-screen overflow-x-clip bg-background px-2">
       <div className="screen-line-top screen-line-bottom mx-auto flex h-(--header-height) items-center gap-2 border-r border-line pr-2 sm:gap-4 md:max-w-3xl">
@@ -30,7 +43,7 @@ export default function SiteHeader() {
 
         <div className="flex-1" />
 
-        <nav className="flex items-center gap-4 max-sm:hidden">
+        <nav className={cn("flex items-center gap-4 max-sm:hidden", railReplaces)}>
           {nav.map((item) => (
             <Link
               key={item.href}
@@ -43,7 +56,7 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center">
-          <VerticalSeparator className="mr-2 max-sm:hidden" />
+          <VerticalSeparator className={cn("mr-2 max-sm:hidden", railReplaces)} />
           <CommandMenu />
           <VerticalSeparator className="mx-2 max-sm:hidden" />
           <SoundLink

@@ -16,7 +16,7 @@ import TechStack from "@/components/tech-stack";
 export default function Home() {
   return (
     <div id="top" className="relative isolate flex-1">
-      <SiteHeader />
+      <SiteHeader hasSectionNav />
       <SectionNav />
       <main className="max-w-screen overflow-x-clip px-2">
         <div className="mx-auto md:max-w-3xl">
