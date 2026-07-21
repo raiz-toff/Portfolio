@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Maximize2, Minimize2, ExternalLink, Waypoints } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
@@ -18,6 +18,18 @@ export function Topology({
 }) {
   const [fullscreen, setFullscreen] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const frameRef = useRef<HTMLIFrameElement>(null);
+
+  // The iframe can finish loading before React hydrates and attaches onLoad, in
+  // which case that event is lost and the overlay would hang forever. Catch the
+  // already-loaded case on mount. (Same-origin, so contentDocument is readable;
+  // the about:blank guard avoids matching the placeholder document.)
+  useEffect(() => {
+    const doc = frameRef.current?.contentDocument;
+    if (doc && doc.readyState === 'complete' && doc.location.href !== 'about:blank') {
+      setLoaded(true);
+    }
+  }, []);
 
   return (
     <figure
@@ -57,11 +69,14 @@ export function Topology({
       {/* diagram */}
       <div className="relative flex-1 bg-fd-background">
         {!loaded && (
-          <div className="absolute inset-0 flex items-center justify-center text-sm text-fd-muted-foreground">
+          // pointer-events-none: never let the placeholder swallow pans/clicks
+          // meant for the diagram underneath it.
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm text-fd-muted-foreground">
             Loading topology…
           </div>
         )}
         <iframe
+          ref={frameRef}
           src={src}
           title={title}
           loading="lazy"
