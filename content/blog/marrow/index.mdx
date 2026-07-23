@@ -1,0 +1,86 @@
+---
+title: "Marrow: A Network Diagram Tool I Built for My Own Labs"
+date: 2026-07-23
+description: "Marrow compiles a description of your network into a self-contained, interactive HTML diagram you host yourself — no login wall, no drawing by hand. Here's what it does and why I built it."
+tags: ["Marrow", "Side Project", "Networking", "Documentation", "Open Source", "Diagrams"]
+categories: ["Projects"]
+cover: "/blog/covers/marrow.png"
+draft: false
+---
+
+I made **Marrow**, a small tool that turns a written description of a network into an interactive diagram — a single HTML file you can drop into any docs site, wiki, or static host. This post is about what it does and why I built it. If you want the full depth, the [documentation site](https://marrow-docs.vercel.app) and the GitHub repo at the end cover everything.
+
+The quickest way to explain it is to show its output. The diagram below is my actual home lab. I didn't draw it — I described it, and Marrow compiled this:
+
+<Topology src="/projects/network-map/my-homelab.html" title="My home lab, compiled by Marrow" />
+
+That is one self-contained file. Pan it, zoom it, click a node to inspect it, search, export it to PNG or SVG. It works with the network unplugged — nothing is fetched, nothing phones home. Open it in a new tab and there's no account, no viewer, no "sign in to interact."
+
+## Why I Built It
+
+I keep a home lab, and I write up what I do with it. Every write-up wants a topology diagram, and I kept hitting the same wall.
+
+You basically get two options today. You **draw by hand** in draw.io or Lucidchart — which is fine until you re-cable something, and then you're back dragging boxes to match reality. Or you **hand-code a DSL** in Graphviz or Mermaid, which is nicer to version, but it emits a flat image. A dead PNG. You can't click a switch to see what's on it.
+
+My lab changes constantly, so my diagrams were always a little bit wrong, and none of them let a reader actually poke at the thing. I wanted to describe the network once, keep that description in git next to everything else, and get back something alive.
+
+## Describe Structure, Not Layout
+
+The core idea in Marrow is that you don't place anything. You state what things **are**, and it works out where they go.
+
+```yaml
+marrow: 2
+name: Small Office
+theme: dark
+
+zones:
+  - id: office
+    name: Office LAN
+
+devices:
+  - id: core-sw-01
+    name: Core Switch
+    icon: affinity/tile/switch-multilayer
+    tier: core
+    zone: office
+  - id: srv-01
+    name: File Server
+    icon: affinity/tile/server
+    tier: endpoint
+    zone: office
+
+links:
+  - from: core-sw-01:Gi1/0/1
+    to: srv-01:eno1
+    speed: 10G
+```
+
+You say a device's **zone** (where it lives) and its **tier** (the role it plays), and Marrow computes one correct layout — layered, hub-and-spoke, ring, mesh, or a zoned mosaic — depending on the shape of what you described. Nothing to drag. When the network changes, you edit two lines and rebuild.
+
+There's a validator in front of the whole thing: point it at a file and it catches every bad reference and typo with a line number, a fix hint, and a "did you mean" suggestion. Most of my mistakes never make it to the diagram.
+
+## The Output Is Yours
+
+This was the part I cared about most. The diagram is **just files** — self-contained, offline, and embeddable anywhere. The interactive version isn't trapped behind a platform the way it is with hosted tools; the same file that renders on my site renders from a USB stick. That's why I could paste my home lab straight into this post: it's a plain artifact, and it belongs to me.
+
+You can author the YAML by hand, or — since I live in a terminal — drive the whole loop from an AI coding agent. Marrow ships a Claude Code skill for exactly that, so I can ask an agent to sketch a topology and it uses the real tool to build and check it.
+
+## Where It Stands
+
+Marrow is open source under the MIT license. It needs Node 24, ships with about 1,120 icons on a fresh clone (Cisco-style, generic, and Kubernetes shapes), and can pull the AWS/Azure/GCP packs from the vendors when you want them. It's covered by a test suite and a CI pipeline, and there's a proper docs site with the schema, guides, and the reasoning behind each design decision.
+
+It scratches my own itch well, and I'd genuinely like to know where it falls short for other people's networks.
+
+<div className="my-10 flex justify-center rounded-xl py-12" style={{ background: "#09090b", border: "1px solid rgba(255,255,255,0.08)" }}>
+  <img src="/img/marrow/wordmark-dark.svg" alt="Marrow" style={{ height: "44px", width: "auto" }} />
+</div>
+
+## Try It
+
+The docs — schema, CLI, guides, and the design decisions:
+
+<LinkCard title="marrow-docs.vercel.app" href="https://marrow-docs.vercel.app" />
+
+The source:
+
+<LinkCard title="github.com/raiz-toff/Marrow" href="https://github.com/raiz-toff/Marrow" />
