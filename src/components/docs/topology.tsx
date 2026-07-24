@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTheme } from 'next-themes';
 import { Maximize2, Minimize2, ExternalLink, Waypoints } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
@@ -19,6 +20,7 @@ export function Topology({
   const [fullscreen, setFullscreen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const frameRef = useRef<HTMLIFrameElement>(null);
+  const { resolvedTheme } = useTheme();
 
   // The iframe can finish loading before React hydrates and attaches onLoad, in
   // which case that event is lost and the overlay would hang forever. Catch the
@@ -30,6 +32,30 @@ export function Topology({
       setLoaded(true);
     }
   }, []);
+
+  // The diagrams are built with `theme: auto`, so standalone they follow the
+  // viewer's OS. Embedded, they should follow *this site's* toggle instead —
+  // Marrow accepts a `marrow:theme` postMessage that overrides the baked theme.
+  const sendTheme = useCallback(() => {
+    if (!resolvedTheme) return;
+    frameRef.current?.contentWindow?.postMessage(
+      { type: 'marrow:theme', theme: resolvedTheme === 'dark' ? 'dark' : 'light' },
+      window.location.origin,
+    );
+  }, [resolvedTheme]);
+
+  // The diagram announces itself when its runtime is ready; answer that ping,
+  // and re-send whenever our theme changes afterwards.
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.source === frameRef.current?.contentWindow && e.data?.type === 'marrow:ready') {
+        sendTheme();
+      }
+    };
+    window.addEventListener('message', onMessage);
+    sendTheme();
+    return () => window.removeEventListener('message', onMessage);
+  }, [sendTheme]);
 
   return (
     <figure
