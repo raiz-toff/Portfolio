@@ -165,6 +165,15 @@
   50% { opacity: 0.3; }
 }
 
+/* ── hop-rail pill: a liquid squash-&-stretch replayed on each hop, so the
+   travelling highlight settles like it has mass instead of sliding rigidly ── */
+@keyframes hop-squish {
+  0% { transform: scaleX(1); }
+  35% { transform: scaleX(1.14) scaleY(0.92); }
+  70% { transform: scaleX(0.98) scaleY(1.02); }
+  100% { transform: scaleX(1) scaleY(1); }
+}
+
 /* ── dropdown / palette pop-in, one-shot on mount (command menu, share menu) ── */
 .menu-pop {
   animation: menu-pop 0.15s cubic-bezier(0.2, 0, 0, 1);

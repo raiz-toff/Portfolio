@@ -1,6 +1,7 @@
 import About from "@/components/about";
 import Certifications from "@/components/certifications";
 import Experiences from "@/components/experiences";
+import FeaturedPosts from "@/components/featured-posts";
 import GitHubContributions from "@/components/github-contributions";
 import LabLog from "@/components/lab-log";
 import Overview from "@/components/overview";
@@ -39,6 +40,9 @@ export default function Home() {
 
           <Certifications />
           <Separator />
+
+          {/* Renders (with its own trailing divider) only when posts are featured */}
+          <FeaturedPosts />
 
           <LabLog />
           <Separator />

@@ -43,8 +43,12 @@ export default function Overview() {
         </Item>
 
         <Item icon={<GlobeIcon />}>
-          <a className="link" href={links.labs}>
-            {identity.website}
+          <a className="link" href={links.projects}>
+            Projects
+          </a>
+          <span className="text-muted-foreground"> · </span>
+          <a className="link" href={links.blog}>
+            Blog
           </a>
         </Item>
 

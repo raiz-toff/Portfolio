@@ -12,7 +12,6 @@ export const identity = {
   // base64 — kept out of plaintext to deter trivial scraping; decoded client-side.
   phoneB64: "KzE0Mzc2NjUzMzkw",
   pronouns: "he/him",
-  website: "rajkumarneupane.com/docs",
   flipSentences: [
     "Network engineer. Labs every day.",
     "CCNA · CCST certified.",
@@ -79,6 +78,8 @@ export const workshopPhotos: { src: string; alt: string; caption: string }[] = [
 export const links = {
   // The docs merged into this site — lab notes live at /docs now.
   labs: "/docs",
+  projects: "/docs/projects",
+  blog: "/blog",
   github: "https://github.com/raiz-toff",
   linkedin: "https://www.linkedin.com/in/rjneupane",
   credly: "https://www.credly.com/users/rajkumarneupane",

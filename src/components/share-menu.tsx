@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useClickSound } from "@/hooks/use-click-sound";
+import { PillIcon, PillLabel, pillClass } from "./pill";
 import {
   EllipsisIcon,
   LinkChainIcon,
@@ -81,9 +82,12 @@ export default function ShareMenu({ title, url }: ShareMenuProps) {
           click();
           setIsOpen((v) => !v);
         }}
-        className="relative flex size-8 items-center justify-center rounded-lg border bg-background text-foreground/80 transition-[background-color,scale] duration-150 ease-out after:absolute after:-inset-1 after:content-[''] hover:bg-muted active:scale-[0.96]"
+        className={pillClass}
       >
-        <ShareIcon className="size-4" />
+        <PillIcon>
+          <ShareIcon />
+        </PillIcon>
+        <PillLabel>Share</PillLabel>
       </button>
 
       {isOpen && (

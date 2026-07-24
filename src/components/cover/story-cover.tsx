@@ -22,7 +22,7 @@
 // setCurrentTime(0) so staged reveals replay.
 
 import Link from "next/link";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { useClickSound } from "@/hooks/use-click-sound";
 import ColdAisle from "./cold-aisle";
@@ -50,7 +50,7 @@ const PARENT: Record<SceneId, SceneId | null> = {
   floor: null,
   aisle: "floor",
   rack: "aisle",
-  panel: "rack",
+  panel: "floor",
   farend: "panel",
   bench: "rack",
 };
@@ -59,7 +59,7 @@ const BACK_LABEL: Record<SceneId, string> = {
   floor: "",
   aisle: "← the floor",
   rack: "← the aisle",
-  panel: "← the rack",
+  panel: "← the floor",
   farend: "← the near end",
   bench: "← the rack",
 };
@@ -117,10 +117,12 @@ const SCENES: Record<
 // The five hops of the rail (farend folds into hop 04).
 const CHAPTERS: { scene: SceneId; num: string; label: string }[] = [
   { scene: "floor", num: "01", label: "floor" },
-  { scene: "aisle", num: "02", label: "aisle" },
-  { scene: "rack", num: "03", label: "rack" },
-  { scene: "panel", num: "04", label: "layer 1" },
-  { scene: "bench", num: "05", label: "bench" },
+  // Trimmed to a two-hop cover: floor → layer 1, which then auto-reveals its
+  // far end. The middle chapters (aisle/rack) and the bench finale are parked.
+  // { scene: "aisle", num: "02", label: "aisle" },
+  // { scene: "rack", num: "03", label: "rack" },
+  { scene: "panel", num: "02", label: "layer 1" },
+  // { scene: "bench", num: "05", label: "bench" },
 ];
 
 function Chip({
@@ -193,15 +195,71 @@ function HopRail({
   onGo: (to: SceneId) => void;
 }) {
   const [click] = useClickSound();
+  const navRef = useRef<HTMLElement>(null);
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  // Geometry of the sliding highlight, measured from the active hop's button so
+  // one pill can glide (transform + width) between hops instead of each hop
+  // cross-fading its own border in place. `null` until first measured, so the
+  // pill mounts already sitting on the active hop rather than sliding in.
+  const [pill, setPill] = useState<
+    { x: number; y: number; w: number; h: number } | null
+  >(null);
+
+  const measure = useCallback(() => {
+    const btn = btnRefs.current[activeIdx];
+    if (!btn) return;
+    setPill({
+      x: btn.offsetLeft,
+      y: btn.offsetTop,
+      w: btn.offsetWidth,
+      h: btn.offsetHeight,
+    });
+  }, [activeIdx]);
+
+  useLayoutEffect(() => {
+    measure();
+  }, [measure]);
+
+  // Re-measure when the rail's box changes (viewport width, font load, or the
+  // non-hero label revealing) so the pill keeps hugging the active hop.
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => measure());
+    ro.observe(nav);
+    return () => ro.disconnect();
+  }, [measure]);
+
   return (
     <nav
+      ref={navRef}
       aria-label="Story chapters"
       className={
         hero
           ? "pointer-events-auto absolute top-[3%] left-1/2 z-30 flex -translate-x-1/2 items-center rounded-full border border-line bg-background/90 px-2 py-1 font-mono text-[10px] shadow-xs backdrop-blur-sm"
-          : "flex items-center font-mono text-[11px]"
+          : "relative flex items-center font-mono text-[11px]"
       }
     >
+      {/* The one highlight that travels between hops. Outer glides + morphs
+          width on a spring (slight overshoot); inner replays a squash-&-stretch
+          each hop, so it reads as liquid with mass, not a rigid slide. */}
+      {pill && (
+        <span
+          aria-hidden
+          className="absolute top-0 left-0 transition-[transform,width,height] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none"
+          style={{
+            transform: `translate(${pill.x}px, ${pill.y}px)`,
+            width: pill.w,
+            height: pill.h,
+          }}
+        >
+          <span
+            key={activeIdx}
+            className="block size-full origin-center rounded-full border border-ring/60 bg-muted/60 animate-[hop-squish_0.5s_ease-out] motion-reduce:animate-none"
+          />
+        </span>
+      )}
+
       {CHAPTERS.map((ch, i) => {
         const isActive = i === activeIdx;
         const visited = i < activeIdx;
@@ -216,6 +274,9 @@ function HopRail({
               />
             )}
             <button
+              ref={(el) => {
+                btnRefs.current[i] = el;
+              }}
               type="button"
               onClick={() => {
                 click();
@@ -223,22 +284,27 @@ function HopRail({
               }}
               aria-label={`hop ${ch.num} — ${ch.label}`}
               aria-current={isActive ? "step" : undefined}
-              className={`relative flex items-center rounded-full outline-none transition-[color,border-color,background-color] duration-300 after:absolute after:-inset-1.5 after:content-[''] focus-visible:ring-1 focus-visible:ring-ring ${
+              className={`relative z-10 flex items-center rounded-full border border-transparent outline-none transition-[color] duration-300 after:absolute after:-inset-1.5 after:content-[''] focus-visible:ring-1 focus-visible:ring-ring ${
                 hero ? "gap-1 px-1.5 py-0.5" : "gap-1.5 px-2 py-1"
               } ${
                 isActive
-                  ? "border border-ring/60 bg-muted/60 text-foreground"
+                  ? "text-foreground"
                   : visited
-                    ? "border border-transparent text-muted-foreground hover:text-foreground"
-                    : "border border-transparent text-muted-foreground/50 hover:text-foreground"
+                    ? "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground/50 hover:text-foreground"
               }`}
             >
-              {isActive && (
-                <span
-                  className="size-1.5 shrink-0 animate-pulse rounded-full bg-led-green motion-reduce:animate-none"
-                  aria-hidden
-                />
-              )}
+              {/* Dot always reserves its space (scale-toggled), so hops don't
+                  reflow when the active one changes. It springs in with a small
+                  overshoot rather than just fading, for a tactile pop. */}
+              <span
+                className={`size-1.5 shrink-0 rounded-full bg-led-green transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+                  isActive
+                    ? "scale-100 animate-pulse motion-reduce:animate-none"
+                    : "scale-0"
+                }`}
+                aria-hidden
+              />
               {ch.num}
               {!hero && isActive && <span>{ch.label}</span>}
             </button>
@@ -327,6 +393,15 @@ export default function StoryCover({
     return () => window.clearTimeout(t);
   }, [scene.gen, scene.prev]);
 
+  // Cover beat: hop 04 (layer 1) lands on the near-end patch panel, holds a
+  // moment, then drifts through to the far end and stays there. Re-arms each
+  // time the near end is entered; cancelled if the viewer navigates first.
+  useEffect(() => {
+    if (scene.cur !== "panel") return;
+    const t = window.setTimeout(() => go("farend"), 1600);
+    return () => window.clearTimeout(t);
+  }, [scene.cur, go]);
+
   // rewind the fresh view's SMIL timeline so its staged reveal replays on
   // every visit (browsers share one timeline per svg; re-entering a scene
   // late would otherwise skip its choreography). Also park keyboard focus on
@@ -386,12 +461,12 @@ export default function StoryCover({
             <DcFloor onNear={setNearRack} hud={false} />
             <Chip
               pos={{ right: "2%", bottom: "13%" }}
-              onClick={() => go("aisle")}
+              onClick={() => go("panel")}
               pulse
             >
               {nearRack
-                ? `step in beside ${nearRack} →`
-                : "walk to a rack, or step in →"}
+                ? `trace ${nearRack} →`
+                : "trace layer 1 →"}
             </Chip>
           </>
         );
@@ -452,14 +527,7 @@ export default function StoryCover({
           <>
             <DualPatchPanel />
             {back}
-            <Chip
-              pos={{ right: "2.5%", top: "4%" }}
-              onClick={() => go("bench")}
-              order={1}
-              pulse
-            >
-              follow the uplink home →
-            </Chip>
+            {/* far end is the terminal beat of the cover — the story stays here */}
           </>
         );
       case "bench":
